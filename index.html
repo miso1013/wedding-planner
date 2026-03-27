@@ -699,8 +699,44 @@
   .edit-delete-btn:hover { background: #fce4e4; color: #c0392b; }
   .user-added-item { border-left: 3px solid var(--primary-light); }
 
+  /* Month selector tabs */
+  .month-selector {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    padding: 0 20px 12px;
+    position: relative;
+  }
+  .month-tab {
+    padding: 10px 24px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 24px;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 4px;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .month-tab:hover {
+    background: rgba(255,255,255,0.25);
+    color: white;
+  }
+  .month-tab.active {
+    background: white;
+    color: var(--primary-dark);
+    border-color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-weight: 700;
+  }
+
   @media (max-width: 600px) {
     .header h1 { font-size: 22px; }
+    .month-tab { padding: 8px 16px; font-size: 12px; margin: 0 2px; }
     .tab-btn { padding: 12px 14px; font-size: 12px; }
     .card { padding: 18px; }
     .transport-grid { grid-template-columns: 1fr; }
@@ -723,6 +759,13 @@
   <div class="dday" id="ddayDisplay"></div>
 </div>
 
+<div class="month-selector" id="monthSelector">
+  <button class="month-tab active" data-month="2028-01">1월</button>
+  <button class="month-tab" data-month="2028-02">2월</button>
+  <button class="month-tab" data-month="2028-03">3월</button>
+  <button class="month-tab" data-month="2028-06">6월</button>
+</div>
+
 <nav class="tab-nav" id="tabNav">
   <button class="tab-btn active" data-tab="dashboard">대시보드</button>
   <button class="tab-btn" data-tab="budget">총 예산</button>
@@ -740,16 +783,6 @@
 <!-- ==================== DASHBOARD TAB ==================== -->
 <div class="tab-content active" id="tab-dashboard">
   <div class="input-group">
-    <label>예식 예정월:</label>
-    <select id="weddingMonth">
-      <option value="2028-01" selected>2028년 1월</option>
-      <option value="2028-02">2028년 2월</option>
-      <option value="2028-03">2028년 3월</option>
-      <option value="2028-04">2028년 4월</option>
-      <option value="2028-05">2028년 5월</option>
-      <option value="2028-06">2028년 6월</option>
-      <option value="2028-07">2028년 7월</option>
-    </select>
     <label>예산 등급:</label>
     <select id="budgetTier">
       <option value="economy">절약형 (~2,200만)</option>
@@ -1146,13 +1179,9 @@
 <div class="tab-content" id="tab-timeline">
   <div class="card">
     <h2>결혼 목표일 설정</h2>
-    <div class="note-box pink">
-      <strong>추천 날짜:</strong> 2028년 1월 15일 (토요일)<br>
-      1월 1일은 신정, 1월 26~28일은 설날 연휴이므로 <strong>1월 8일(토)</strong> 또는 <strong>1월 15일(토)</strong>이 최적입니다.<br>
-      백업 날짜: 2028년 7월 8일 (토요일)
+    <div class="note-box pink" id="timelineTargetNote">
     </div>
-    <p style="font-size:13px; color:var(--text-light); margin-top:10px;">
-      아래 일정은 <strong>2028년 1월 15일 기준</strong>으로 작성되었습니다. D-day 기준으로 역산한 일정입니다.
+    <p style="font-size:13px; color:var(--text-light); margin-top:10px;" id="timelineBasisNote">
     </p>
   </div>
   <div id="timelineContainer"></div>
@@ -1309,10 +1338,7 @@
 <div class="tab-content" id="tab-honeymoon">
   <div class="card">
     <h2>신혼여행지별 예상 비용 비교 (2인 기준)</h2>
-    <div class="tip-box" style="margin-bottom:1rem">
-      <strong>7월 결혼 기준 신혼여행 추천 (2인 비용)</strong>
-      7월은 유럽/스위스가 최적기이고, 코타키나발루도 건기라 좋습니다.
-      마일리지 카드로 항공권을 해결하면 항공비를 크게 절약할 수 있습니다.
+    <div class="tip-box" id="honeymoonMonthTip" style="margin-bottom:1rem">
     </div>
     <div class="input-group">
       <label>신혼여행지:</label>
@@ -1727,14 +1753,14 @@ const TIPS = [
 ];
 
 const HONEYMOON_DATA = [
-  { id:'cotakinabalu', name:'코타키나발루', country:'말레이시아', days:'4박 5일', tier:'budget', flight:{low:50,high:140,note:'직항 5시간'}, hotel:{low:60,high:150,note:'4성급 리조트'}, expense:{low:30,high:50,note:'물가 저렴'}, total:{low:140,high:300}, pros:['가성비 최고','석양이 아름다운 해변','스노클링/다이빙 천국'], cons:['7월 약간 더움','성수기 항공비 상승'], bestTime:'3~9월', scores:{1:{s:2,n:'1월 우기'},3:{s:3,n:'3월 우기 끝'},7:{s:4,n:'7월 건기, 적합'}}, tag:'가성비 1위', color:'#4caf50' },
-  { id:'danang', name:'다낭', country:'베트남', days:'4박 5일', tier:'budget', flight:{low:80,high:120,note:'직항 4.5시간'}, hotel:{low:100,high:240,note:'5성급 리조트'}, expense:{low:50,high:100,note:'스파/식비'}, total:{low:250,high:400}, pros:['5성급 리조트 가성비','프리미엄 스파 저렴','한국인 친화적'], cons:['7월 매우 더움','간헐적 소나기'], bestTime:'2~8월', scores:{1:{s:2,n:'1월 우기'},3:{s:4,n:'3월 건기 시작'},7:{s:3,n:'7월 건기 폭염'}}, tag:'리조트 가성비', color:'#ff9800' },
-  { id:'bali', name:'발리', country:'인도네시아', days:'5박 7일', tier:'budget', flight:{low:80,high:160,note:'직항 7시간'}, hotel:{low:100,high:250,note:'5성급 풀빌라'}, expense:{low:50,high:100,note:'물가 매우 저렴'}, total:{low:230,high:500}, pros:['풀빌라 가성비 최고','우붓 계단식 논 절경','스파/마사지 천국'], cons:['7시간 비행','교통 혼잡'], bestTime:'5~9월', scores:{1:{s:2,n:'1월 우기'},3:{s:3,n:'3월 우기 끝'},7:{s:5,n:'7월 건기 최적!'}}, tag:'풀빌라 천국', color:'#009688' },
-  { id:'europe', name:'유럽 (이탈리아/프랑스)', country:'이탈리아/프랑스', days:'7박 9일', tier:'premium', flight:{low:200,high:360,note:'직항 11~12시간'}, hotel:{low:110,high:200,note:'중급 호텔'}, expense:{low:150,high:250,note:'유럽 물가'}, total:{low:500,high:750}, pros:['로마/피렌체/파리 로맨틱','문화/미식 체험','쇼핑 (면세)'], cons:['7월 성수기 비쌈','관광지 인파','소매치기 주의'], bestTime:'4~6월, 9~10월', scores:{1:{s:1,n:'1월 겨울'},3:{s:3,n:'3월 초봄'},7:{s:5,n:'7월 최적!'}}, tag:'7월 최적', color:'#3f51b5' },
-  { id:'santorini', name:'산토리니', country:'그리스', days:'6박 8일', tier:'premium', flight:{low:200,high:360,note:'경유 15~18시간'}, hotel:{low:150,high:350,note:'이아 일몰뷰 호텔'}, expense:{low:100,high:200,note:'그리스 물가'}, total:{low:450,high:800}, pros:['세계 3대 일몰 (이아)','하얀 건물+파란 지붕','동굴호텔 인피니티풀'], cons:['7월 최성수기','직항 없음'], bestTime:'6~9월', scores:{1:{s:1,n:'1월 겨울 폐쇄'},3:{s:2,n:'3월 아직 쌀쌀'},7:{s:5,n:'7월 최고!'}}, tag:'7월 일몰 최적', color:'#1565c0' },
-  { id:'croatia', name:'크로아티아', country:'크로아티아', days:'7박 9일', tier:'premium', flight:{low:240,high:340,note:'경유 14~18시간'}, hotel:{low:100,high:200,note:'두브로브니크 4성급'}, expense:{low:120,high:200,note:'식비/페리/투어'}, total:{low:450,high:700}, pros:['아드리아해 수영 가능','두브로브니크 절경','서유럽보다 저렴'], cons:['직항 없음','7월 관광객 많음'], bestTime:'6~9월', scores:{1:{s:1,n:'1월 겨울'},3:{s:2,n:'3월 춥고 수영 불가'},7:{s:4,n:'7월 아드리아해 완벽'}}, tag:'아드리아해', color:'#c62828' },
-  { id:'hawaii', name:'하와이', country:'미국', days:'5박 7일', tier:'premium', flight:{low:200,high:400,note:'직항 9시간'}, hotel:{low:200,high:400,note:'와이키키 4~5성급'}, expense:{low:150,high:300,note:'미국 물가+팁'}, total:{low:550,high:1000}, pros:['직항 있음','자연+도시 균형','깨끗한 해변'], cons:['미국 물가+팁','렌터카 필수'], bestTime:'4~10월', scores:{1:{s:3,n:'1월 따뜻, 고래관측'},3:{s:4,n:'3월 우기 끝'},7:{s:4,n:'7월 건기 쾌적'}}, tag:'직항+자연', color:'#ff5722' },
-  { id:'swiss', name:'스위스', country:'스위스', days:'6박 8일', tier:'premium', flight:{low:260,high:360,note:'직항 대한항공'}, hotel:{low:170,high:350,note:'중급호텔'}, expense:{low:150,high:300,note:'최고 수준 물가'}, total:{low:550,high:900}, pros:['7월 알프스 최고 절경','패러글라이딩 최적기','전 산악열차 운행'], cons:['유럽 최고 물가','7월 최고가'], bestTime:'6~9월 (7월 최적)', scores:{1:{s:3,n:'1월 스키 시즌'},3:{s:3,n:'3월 비수기'},7:{s:5,n:'7월 알프스 최고!'}}, tag:'7월 알프스 최적', color:'#f44336' },
+  { id:'cotakinabalu', name:'코타키나발루', country:'말레이시아', days:'4박 5일', tier:'budget', flight:{low:50,high:140,note:'직항 5시간'}, hotel:{low:60,high:150,note:'4성급 리조트'}, expense:{low:30,high:50,note:'물가 저렴'}, total:{low:140,high:300}, pros:['가성비 최고','석양이 아름다운 해변','스노클링/다이빙 천국'], cons:['7월 약간 더움','성수기 항공비 상승'], bestTime:'3~9월', scores:{1:{s:2,n:'1월 우기'},2:{s:2,n:'2월 우기'},3:{s:3,n:'3월 우기 끝'},6:{s:4,n:'6월 건기, 적합'}}, tag:'가성비 1위', color:'#4caf50' },
+  { id:'danang', name:'다낭', country:'베트남', days:'4박 5일', tier:'budget', flight:{low:80,high:120,note:'직항 4.5시간'}, hotel:{low:100,high:240,note:'5성급 리조트'}, expense:{low:50,high:100,note:'스파/식비'}, total:{low:250,high:400}, pros:['5성급 리조트 가성비','프리미엄 스파 저렴','한국인 친화적'], cons:['여름 매우 더움','간헐적 소나기'], bestTime:'2~8월', scores:{1:{s:2,n:'1월 우기'},2:{s:3,n:'2월 건기 시작'},3:{s:4,n:'3월 건기 본격'},6:{s:4,n:'6월 건기, 더움'}}, tag:'리조트 가성비', color:'#ff9800' },
+  { id:'bali', name:'발리', country:'인도네시아', days:'5박 7일', tier:'budget', flight:{low:80,high:160,note:'직항 7시간'}, hotel:{low:100,high:250,note:'5성급 풀빌라'}, expense:{low:50,high:100,note:'물가 매우 저렴'}, total:{low:230,high:500}, pros:['풀빌라 가성비 최고','우붓 계단식 논 절경','스파/마사지 천국'], cons:['7시간 비행','교통 혼잡'], bestTime:'5~9월', scores:{1:{s:2,n:'1월 우기'},2:{s:2,n:'2월 우기'},3:{s:3,n:'3월 우기 끝'},6:{s:5,n:'6월 건기 최적!'}}, tag:'풀빌라 천국', color:'#009688' },
+  { id:'europe', name:'유럽 (이탈리아/프랑스)', country:'이탈리아/프랑스', days:'7박 9일', tier:'premium', flight:{low:200,high:360,note:'직항 11~12시간'}, hotel:{low:110,high:200,note:'중급 호텔'}, expense:{low:150,high:250,note:'유럽 물가'}, total:{low:500,high:750}, pros:['로마/피렌체/파리 로맨틱','문화/미식 체험','쇼핑 (면세)'], cons:['6월 성수기 시작','관광지 인파','소매치기 주의'], bestTime:'4~6월, 9~10월', scores:{1:{s:1,n:'1월 겨울'},2:{s:2,n:'2월 겨울 막바지'},3:{s:3,n:'3월 초봄'},6:{s:5,n:'6월 최적!'}}, tag:'6월 최적', color:'#3f51b5' },
+  { id:'santorini', name:'산토리니', country:'그리스', days:'6박 8일', tier:'premium', flight:{low:200,high:360,note:'경유 15~18시간'}, hotel:{low:150,high:350,note:'이아 일몰뷰 호텔'}, expense:{low:100,high:200,note:'그리스 물가'}, total:{low:450,high:800}, pros:['세계 3대 일몰 (이아)','하얀 건물+파란 지붕','동굴호텔 인피니티풀'], cons:['6월 성수기 시작','직항 없음'], bestTime:'6~9월', scores:{1:{s:1,n:'1월 겨울 폐쇄'},2:{s:1,n:'2월 겨울 폐쇄'},3:{s:2,n:'3월 아직 쌀쌀'},6:{s:5,n:'6월 최고!'}}, tag:'6월 일몰 최적', color:'#1565c0' },
+  { id:'croatia', name:'크로아티아', country:'크로아티아', days:'7박 9일', tier:'premium', flight:{low:240,high:340,note:'경유 14~18시간'}, hotel:{low:100,high:200,note:'두브로브니크 4성급'}, expense:{low:120,high:200,note:'식비/페리/투어'}, total:{low:450,high:700}, pros:['아드리아해 수영 가능','두브로브니크 절경','서유럽보다 저렴'], cons:['직항 없음','6월 관광객 많음'], bestTime:'6~9월', scores:{1:{s:1,n:'1월 겨울'},2:{s:1,n:'2월 겨울'},3:{s:2,n:'3월 춥고 수영 불가'},6:{s:4,n:'6월 아드리아해 완벽'}}, tag:'아드리아해', color:'#c62828' },
+  { id:'hawaii', name:'하와이', country:'미국', days:'5박 7일', tier:'premium', flight:{low:200,high:400,note:'직항 9시간'}, hotel:{low:200,high:400,note:'와이키키 4~5성급'}, expense:{low:150,high:300,note:'미국 물가+팁'}, total:{low:550,high:1000}, pros:['직항 있음','자연+도시 균형','깨끗한 해변'], cons:['미국 물가+팁','렌터카 필수'], bestTime:'4~10월', scores:{1:{s:3,n:'1월 따뜻, 고래관측'},2:{s:3,n:'2월 따뜻, 고래관측'},3:{s:4,n:'3월 우기 끝'},6:{s:4,n:'6월 건기 쾌적'}}, tag:'직항+자연', color:'#ff5722' },
+  { id:'swiss', name:'스위스', country:'스위스', days:'6박 8일', tier:'premium', flight:{low:260,high:360,note:'직항 대한항공'}, hotel:{low:170,high:350,note:'중급호텔'}, expense:{low:150,high:300,note:'최고 수준 물가'}, total:{low:550,high:900}, pros:['여름 알프스 최고 절경','패러글라이딩 최적기','전 산악열차 운행'], cons:['유럽 최고 물가','성수기 가격 높음'], bestTime:'6~9월', scores:{1:{s:3,n:'1월 스키 시즌'},2:{s:3,n:'2월 스키 시즌'},3:{s:3,n:'3월 비수기'},6:{s:5,n:'6월 알프스 최고!'}}, tag:'6월 알프스 최적', color:'#f44336' },
 ];
 
 const VENUE_DATA = [
@@ -1752,8 +1778,9 @@ const VENUE_DATA = [
 // STATE
 // ===================================================================
 const savedState = JSON.parse(localStorage.getItem('weddingState') || '{}');
+const VALID_MONTHS = ['2028-01','2028-02','2028-03','2028-06'];
 let state = {
-  weddingMonth: savedState.weddingMonth || '2028-01',
+  weddingMonth: (savedState.weddingMonth && VALID_MONTHS.includes(savedState.weddingMonth)) ? savedState.weddingMonth : '2028-01',
   budgetTier: savedState.budgetTier || 'standard',
   currentSaved: savedState.currentSaved || 0,
   honeymoon: savedState.honeymoon || 'cotakinabalu',
@@ -2011,10 +2038,45 @@ function renderSavings() {
 // ===================================================================
 // TIMELINE
 // ===================================================================
+function getTimelineWithDynamicDates() {
+  const [wy, wm] = state.weddingMonth.split('-').map(Number);
+  const weddingDate = new Date(wy, wm - 1, 15); // 15th of wedding month
+
+  function addDays(date, days) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+  }
+  function fmtDate(d) {
+    return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0');
+  }
+  function fmtDateFull(d) {
+    return d.getFullYear() + '.' + String(d.getMonth()+1).padStart(2,'0') + '.' + String(d.getDate()).padStart(2,'0');
+  }
+
+  const d45 = addDays(weddingDate, -45);
+  const d30 = addDays(weddingDate, -30);
+  const d14 = addDays(weddingDate, -14);
+  const d7 = addDays(weddingDate, -7);
+  const d1 = addDays(weddingDate, -1);
+
+  // Clone and update the dynamic items at the end of timeline
+  return TIMELINE_DATA.map(item => {
+    if (item.title.includes('D-45일')) return {...item, date: fmtDate(d45) + ' (' + fmtDateFull(d45) + ')'};
+    if (item.title.includes('D-30일')) return {...item, date: fmtDate(d30) + ' (' + fmtDateFull(d30) + ')'};
+    if (item.title.includes('D-14일')) return {...item, date: fmtDate(d14) + ' (' + fmtDateFull(d14) + ')'};
+    if (item.title.includes('D-7일')) return {...item, date: fmtDateFull(d7)};
+    if (item.title.includes('D-1')) return {...item, date: fmtDateFull(d1)};
+    if (item.title.includes('D-Day')) return {...item, date: fmtDateFull(weddingDate)};
+    return item;
+  });
+}
+
 function renderTimeline() {
   const container = document.getElementById('timelineContainer');
+  const dynamicTimeline = getTimelineWithDynamicDates();
   let html = '<div class="card"><h2>결혼 준비 타임라인</h2><div class="timeline">';
-  html += TIMELINE_DATA.map((item, i) => '<div class="tl-item'+(i<2?' milestone':'')+'"><div class="tl-date">'+item.date+'</div><div class="tl-title">'+item.title+'</div><div class="tl-desc">'+item.desc+'</div>'+(item.cost?'<div class="tl-cost">'+item.cost+'</div>':'')+'</div>').join('');
+  html += dynamicTimeline.map((item, i) => '<div class="tl-item'+(i<2?' milestone':'')+'"><div class="tl-date">'+item.date+'</div><div class="tl-title">'+item.title+'</div><div class="tl-desc">'+item.desc+'</div>'+(item.cost?'<div class="tl-cost">'+item.cost+'</div>':'')+'</div>').join('');
 
   // User-added timeline items
   userData.timelineItems.forEach((item, idx) => {
@@ -2028,6 +2090,19 @@ function renderTimeline() {
 
   html += '</div>';
   container.innerHTML = html;
+
+  // Update timeline header notes
+  const [wy, wm] = state.weddingMonth.split('-').map(Number);
+  const monthNotes = {
+    1: '<strong>추천 날짜:</strong> 2028년 1월 15일 (토요일)<br>1월 1일은 신정, 1월 26~28일은 설날 연휴이므로 <strong>1월 8일(토)</strong> 또는 <strong>1월 15일(토)</strong>이 최적입니다.',
+    2: '<strong>추천 날짜:</strong> 2028년 2월 중순<br>2월은 비수기로 웨딩홀 할인이 가능합니다. 설날 연휴 이후 날짜를 추천합니다.',
+    3: '<strong>추천 날짜:</strong> 2028년 3월 중순<br>3월은 봄 시작으로 날씨가 좋아지는 시기입니다. 야외 촬영도 가능해집니다.',
+    6: '<strong>추천 날짜:</strong> 2028년 6월 중순<br>6월은 성수기이므로 웨딩홀 예약을 서두르세요. 장마 시작 전 초순~중순을 추천합니다.',
+  };
+  const noteEl = document.getElementById('timelineTargetNote');
+  if (noteEl) noteEl.innerHTML = monthNotes[wm] || monthNotes[1];
+  const basisEl = document.getElementById('timelineBasisNote');
+  if (basisEl) basisEl.innerHTML = '아래 일정은 <strong>'+wy+'년 '+wm+'월 15일 기준</strong>으로 작성되었습니다. D-day 기준으로 역산한 일정입니다.';
 }
 
 function addUserTimelineItem() {
@@ -2514,21 +2589,52 @@ function removeUserVenue(idx) {
 // HONEYMOON
 // ===================================================================
 function renderScoreBoxes(h) {
-  return [1,3,7].map(function(m) {
+  var selectedMonth = parseInt(state.weddingMonth.split('-')[1]);
+  var months = [1,2,3,6];
+  // Show selected month first, highlighted
+  return months.map(function(m) {
     var sc = h.scores[m];
-    var bg = sc.s>=4?'#e8f5e9':sc.s>=3?'#fff3e0':'#fce4e4';
+    if (!sc) return '';
+    var isSelected = m === selectedMonth;
+    var bg = isSelected ? (sc.s>=4?'#c8e6c9':sc.s>=3?'#ffe0b2':'#ffcdd2') : (sc.s>=4?'#e8f5e9':sc.s>=3?'#fff3e0':'#fce4e4');
     var cl = sc.s>=4?'var(--success)':sc.s>=3?'var(--warning)':'var(--danger)';
-    return '<div style="background:'+bg+';padding:0.4rem 0.6rem;border-radius:6px;font-size:0.78rem;"><strong style="color:'+cl+'">'+m+'월 '+stars(sc.s)+'</strong><br>'+sc.n+'</div>';
+    var border = isSelected ? 'border:2px solid '+cl+';' : '';
+    return '<div style="background:'+bg+';padding:0.4rem 0.6rem;border-radius:6px;font-size:0.78rem;'+border+'"><strong style="color:'+cl+'">'+m+'월 '+stars(sc.s)+'</strong><br>'+sc.n+'</div>';
   }).join('');
 }
+function getMonthRecommendation(month) {
+  const recs = {
+    1: { icon: '❄️', title: '1월 (겨울) 신혼여행 추천', desc: '한국은 한겨울이므로 따뜻한 동남아/남반구가 최적입니다. 코타키나발루, 다낭, 발리 등 따뜻한 해변 리조트를 추천합니다. 하와이도 1월에 고래 관측이 가능해 특별한 경험이 됩니다.' },
+    2: { icon: '🌸', title: '2월 (초봄) 신혼여행 추천', desc: '아직 겨울이지만 봄이 시작되는 시기입니다. 동남아는 건기가 시작되어 다낭이 좋아지기 시작합니다. 코타키나발루, 하와이도 좋은 선택입니다.' },
+    3: { icon: '🌷', title: '3월 (봄) 신혼여행 추천', desc: '봄이 본격적으로 시작됩니다. 다낭은 건기 본격 시작, 하와이는 우기가 끝나 쾌적합니다. 유럽도 초봄으로 관광 시작 시기입니다. 발리는 우기가 끝나갑니다.' },
+    6: { icon: '☀️', title: '6월 (여름) 신혼여행 추천', desc: '유럽/스위스/산토리니가 최적기입니다! 지중해성 기후의 크로아티아도 완벽합니다. 발리도 건기 최적기이고, 하와이도 쾌적합니다. 마일리지 카드로 항공권을 해결하면 비용을 크게 절약할 수 있습니다.' },
+  };
+  return recs[month] || recs[1];
+}
+
 function renderHoneymoon() {
   document.getElementById('honeymoonSelect').value = state.honeymoon;
   const container = document.getElementById('honeymoonCards');
-  const renderCard = (h) => '<div class="hm-card" style="border-color:'+h.color+'22"><span class="hm-tag" style="background:'+h.color+'">'+h.tag+'</span><div class="hm-header"><h3>'+h.name+'</h3><span class="hm-country">'+h.country+'</span><span class="hm-days">'+h.days+'</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.4rem;margin-bottom:0.8rem;">'+renderScoreBoxes(h)+'</div><div class="hm-costs"><div class="hm-cost-item"><div class="cost-label">항공 (2인)</div><div class="cost-value">'+fmt(h.flight.low)+'~'+fmt(h.flight.high)+'만</div><div class="cost-note">'+h.flight.note+'</div></div><div class="hm-cost-item"><div class="cost-label">숙박</div><div class="cost-value">'+fmt(h.hotel.low)+'~'+fmt(h.hotel.high)+'만</div></div><div class="hm-cost-item"><div class="cost-label">현지경비</div><div class="cost-value">'+fmt(h.expense.low)+'~'+fmt(h.expense.high)+'만</div></div></div><div class="hm-total"><div class="total-label">2인 총 예상 비용</div><div class="total-value">'+fmt(h.total.low)+' ~ '+fmt(h.total.high)+'만원</div></div><div class="hm-lists"><div class="hm-list pros"><h4 style="color:var(--success)">장점</h4><ul>'+h.pros.map(p=>'<li>'+p+'</li>').join('')+'</ul></div><div class="hm-list cons"><h4 style="color:var(--danger)">단점</h4><ul>'+h.cons.map(c=>'<li>'+c+'</li>').join('')+'</ul></div></div><div class="hm-best-time">추천 시기: <strong>'+h.bestTime+'</strong></div></div>';
+  const selectedMonth = parseInt(state.weddingMonth.split('-')[1]);
+  const rec = getMonthRecommendation(selectedMonth);
 
-  const budgetList = HONEYMOON_DATA.filter(h => h.tier === 'budget');
-  const premiumList = HONEYMOON_DATA.filter(h => h.tier === 'premium');
-  let html = '<h3 style="color:var(--success);margin-bottom:0.8rem;">가성비 (140~400만원)</h3>' + budgetList.sort((a,b)=>b.scores[7].s-a.scores[7].s).map(renderCard).join('') + '<h3 style="color:var(--primary-dark);margin:1.5rem 0 0.8rem;">프리미엄 (450~1,000만원)</h3>' + premiumList.sort((a,b)=>b.scores[7].s-a.scores[7].s).map(renderCard).join('');
+  const renderCard = (h) => {
+    var monthScore = h.scores[selectedMonth] ? h.scores[selectedMonth].s : 0;
+    var scoreBadge = monthScore >= 4 ? '<span style="background:var(--success);color:white;padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;margin-left:8px;">'+selectedMonth+'월 강추!</span>' : monthScore >= 3 ? '<span style="background:var(--warning);color:white;padding:2px 8px;border-radius:10px;font-size:0.7rem;font-weight:700;margin-left:8px;">'+selectedMonth+'월 괜찮음</span>' : '';
+    return '<div class="hm-card" style="border-color:'+h.color+'22"><span class="hm-tag" style="background:'+h.color+'">'+h.tag+'</span><div class="hm-header"><h3>'+h.name+scoreBadge+'</h3><span class="hm-country">'+h.country+'</span><span class="hm-days">'+h.days+'</span></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem;margin-bottom:0.8rem;">'+renderScoreBoxes(h)+'</div><div class="hm-costs"><div class="hm-cost-item"><div class="cost-label">항공 (2인)</div><div class="cost-value">'+fmt(h.flight.low)+'~'+fmt(h.flight.high)+'만</div><div class="cost-note">'+h.flight.note+'</div></div><div class="hm-cost-item"><div class="cost-label">숙박</div><div class="cost-value">'+fmt(h.hotel.low)+'~'+fmt(h.hotel.high)+'만</div></div><div class="hm-cost-item"><div class="cost-label">현지경비</div><div class="cost-value">'+fmt(h.expense.low)+'~'+fmt(h.expense.high)+'만</div></div></div><div class="hm-total"><div class="total-label">2인 총 예상 비용</div><div class="total-value">'+fmt(h.total.low)+' ~ '+fmt(h.total.high)+'만원</div></div><div class="hm-lists"><div class="hm-list pros"><h4 style="color:var(--success)">장점</h4><ul>'+h.pros.map(p=>'<li>'+p+'</li>').join('')+'</ul></div><div class="hm-list cons"><h4 style="color:var(--danger)">단점</h4><ul>'+h.cons.map(c=>'<li>'+c+'</li>').join('')+'</ul></div></div><div class="hm-best-time">추천 시기: <strong>'+h.bestTime+'</strong></div></div>';
+  };
+
+  // Sort by selected month's score (descending)
+  const sortByMonth = (a, b) => {
+    var sa = a.scores[selectedMonth] ? a.scores[selectedMonth].s : 0;
+    var sb = b.scores[selectedMonth] ? b.scores[selectedMonth].s : 0;
+    return sb - sa;
+  };
+
+  const budgetList = HONEYMOON_DATA.filter(h => h.tier === 'budget').sort(sortByMonth);
+  const premiumList = HONEYMOON_DATA.filter(h => h.tier === 'premium').sort(sortByMonth);
+  let html = '<div class="note-box pink" style="margin-bottom:1rem;"><strong>'+rec.icon+' '+rec.title+'</strong><br>'+rec.desc+'</div>';
+  html += '<h3 style="color:var(--success);margin-bottom:0.8rem;">가성비 (140~500만원) - '+selectedMonth+'월 추천순</h3>' + budgetList.map(renderCard).join('') + '<h3 style="color:var(--primary-dark);margin:1.5rem 0 0.8rem;">프리미엄 (450~1,000만원) - '+selectedMonth+'월 추천순</h3>' + premiumList.map(renderCard).join('');
 
   // User-added honeymoon items
   userData.honeymoonItems.forEach((item, idx) => {
@@ -2577,6 +2683,7 @@ function selectHoneymoon() {
   saveState();
   const dest = HONEYMOON_DATA.find(h => h.id === sel);
   const result = document.getElementById('honeymoonResult');
+  const selectedMonth = parseInt(state.weddingMonth.split('-')[1]);
   const budgetItem = BUDGET_ITEMS.find(i => i.name === '신혼여행');
   if (budgetItem && dest) {
     budgetItem.economy = dest.total.low;
@@ -2584,13 +2691,22 @@ function selectHoneymoon() {
     budgetItem.premium = dest.total.high;
     budgetItem.detail = dest.name+' '+dest.days+' (항공+숙박+경비)';
   }
+  // Update month tip
+  const rec = getMonthRecommendation(selectedMonth);
+  const tipEl = document.getElementById('honeymoonMonthTip');
+  if (tipEl) {
+    tipEl.innerHTML = '<strong>'+selectedMonth+'월 결혼 기준 신혼여행 추천 (2인 비용)</strong><br>'+rec.desc;
+  }
   if (dest) {
     const avg = Math.round((dest.total.low + dest.total.high) / 2);
     const totalBudget = getTotalBudget(state.budgetTier);
     const gl = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
     const chukui = gl.length > 0 ? gl.reduce((s, g) => s + (g.chukui || 0), 0) : FALLBACK_CHUKUIGEUM;
-    const months23 = 23 * MONTHLY_SAVINGS + 4 * BONUS_AMOUNT;
-    result.innerHTML = '<strong>'+dest.name+' 선택 시 예산 반영 결과</strong>신혼여행 비용: 절약 '+fmt(dest.total.low)+'만 / 표준 '+fmt(avg)+'만 / 프리미엄 '+fmt(dest.total.high)+'만<br>7월 적합도: '+stars(dest.scores[7].s)+'<br>전체 결혼 비용('+( state.budgetTier==='economy'?'절약형':state.budgetTier==='standard'?'표준형':'프리미엄')+'): <b>'+fmt(totalBudget)+'만원</b> | 축의금: <b>'+fmt(chukui)+'만원</b><br>23개월 저축 가능액: <b>'+fmt(months23)+'만원</b> -> '+(months23>=(totalBudget-chukui)?'<span style="color:var(--success)">달성 가능 (여유 '+fmt(months23-(totalBudget-chukui))+'만)</span>':'<span style="color:var(--danger)">부족 '+fmt((totalBudget-chukui)-months23)+'만</span>');
+    const months = getMonthsDiff('2026-04', state.weddingMonth);
+    let totalSaveable = 0;
+    for (let i = 0; i < months; i++) { let m = ((3 + i) % 12) + 1; totalSaveable += MONTHLY_SAVINGS; if (BONUS_MONTHS.includes(m)) totalSaveable += BONUS_AMOUNT; }
+    const destScore = dest.scores[selectedMonth] ? dest.scores[selectedMonth].s : 0;
+    result.innerHTML = '<strong>'+dest.name+' 선택 시 예산 반영 결과</strong><br>신혼여행 비용: 절약 '+fmt(dest.total.low)+'만 / 표준 '+fmt(avg)+'만 / 프리미엄 '+fmt(dest.total.high)+'만<br>'+selectedMonth+'월 적합도: '+stars(destScore)+' '+(dest.scores[selectedMonth]?dest.scores[selectedMonth].n:'')+'<br>전체 결혼 비용('+(state.budgetTier==='economy'?'절약형':state.budgetTier==='standard'?'표준형':'프리미엄')+'): <b>'+fmt(totalBudget)+'만원</b> | 축의금: <b>'+fmt(chukui)+'만원</b><br>'+months+'개월 저축 가능액: <b>'+fmt(totalSaveable)+'만원</b> -> '+(totalSaveable>=(totalBudget-chukui)?'<span style="color:var(--success)">달성 가능 (여유 '+fmt(totalSaveable-(totalBudget-chukui))+'만)</span>':'<span style="color:var(--danger)">부족 '+fmt((totalBudget-chukui)-totalSaveable)+'만</span>');
   }
 }
 
@@ -2871,11 +2987,23 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 // ===================================================================
 // EVENT LISTENERS
 // ===================================================================
-document.getElementById('weddingMonth').addEventListener('change', (e) => { state.weddingMonth = e.target.value; saveState(); renderAll(); });
+// Month tab selector
+document.querySelectorAll('.month-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.month-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.weddingMonth = btn.dataset.month;
+    saveState();
+    renderAll();
+  });
+});
+
 document.getElementById('budgetTier').addEventListener('change', (e) => { state.budgetTier = e.target.value; saveState(); renderAll(); });
 
-// Restore saved settings
-document.getElementById('weddingMonth').value = state.weddingMonth;
+// Restore saved settings - activate the correct month tab
+document.querySelectorAll('.month-tab').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.month === state.weddingMonth);
+});
 document.getElementById('budgetTier').value = state.budgetTier;
 document.getElementById('currentSaved').value = state.currentSaved;
 
