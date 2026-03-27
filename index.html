@@ -1472,11 +1472,28 @@
       <button onclick="addGuest()" style="padding:0.5rem 1rem;background:var(--primary);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;font-family:inherit;">추가</button>
     </div>
 
-    <div style="margin-bottom:1rem;">
+    <div style="display:flex;gap:0.5rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap;">
       <select id="guestRelFilter" onchange="renderGuests()" style="padding:0.5rem;border:1px solid var(--border);border-radius:8px;font-family:inherit;">
         <option value="all">관계 전체</option><option value="가족">가족</option><option value="친척">친척</option>
         <option value="친구">친구</option><option value="직장">직장</option><option value="학교">학교</option><option value="기타">기타</option>
       </select>
+      <button onclick="toggleBulkImport()" id="bulkImportToggle" style="padding:0.5rem 1rem;background:var(--accent);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;font-size:0.85rem;">일괄 등록 (엑셀 복붙)</button>
+      <button onclick="resetToDefault()" style="padding:0.5rem 1rem;background:var(--text-light);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;font-size:0.85rem;">기본 데이터 복원</button>
+    </div>
+
+    <div id="bulkImportPanel" style="display:none;margin-bottom:1rem;padding:1rem;background:var(--card-bg);border:2px dashed var(--primary);border-radius:12px;">
+      <div style="margin-bottom:0.5rem;font-weight:700;color:var(--primary-dark);">엑셀/스프레드시트에서 복사 붙여넣기</div>
+      <div style="margin-bottom:0.8rem;font-size:0.85rem;color:var(--text-light);">
+        형식: <code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;">이름 [Tab] 관계 [Tab] 축의금(만) [Tab] 동반(명)</code><br>
+        관계: 가족/친척/친구/직장/학교/기타 | 축의금·동반 생략 시 기본값(15만, 0명)<br>
+        예시: <code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;">홍길동	친구	20	0</code>
+      </div>
+      <textarea id="bulkImportText" placeholder="여기에 엑셀에서 복사한 데이터를 붙여넣기 하세요...&#10;&#10;예시:&#10;홍길동	친구	20	0&#10;김영희	학교	15	1&#10;박철수	직장	10	0" style="width:100%;min-height:150px;padding:0.8rem;border:1px solid var(--border);border-radius:8px;font-family:'Courier New',monospace;font-size:0.9rem;resize:vertical;box-sizing:border-box;"></textarea>
+      <div style="display:flex;gap:0.5rem;margin-top:0.8rem;">
+        <button onclick="bulkImportGuests()" style="padding:0.5rem 1.5rem;background:var(--primary);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-family:inherit;">현재 탭에 추가</button>
+        <button onclick="document.getElementById('bulkImportText').value='';document.getElementById('bulkImportPanel').style.display='none';" style="padding:0.5rem 1rem;background:var(--border);color:var(--text);border:none;border-radius:8px;cursor:pointer;font-family:inherit;">닫기</button>
+        <span id="bulkImportResult" style="align-self:center;font-size:0.85rem;color:var(--success);font-weight:600;"></span>
+      </div>
     </div>
 
     <div id="groomGuestPanel">
@@ -2580,8 +2597,194 @@ function selectHoneymoon() {
 // ===================================================================
 // GUEST LIST
 // ===================================================================
-let guests = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+const DEFAULT_GUESTS = [
+  // 신랑측 (groom)
+  {id:1,name:'엄마',side:'groom',relation:'가족',chukui:0,companion:0},
+  {id:2,name:'아빠',side:'groom',relation:'가족',chukui:0,companion:0},
+  {id:3,name:'큰형',side:'groom',relation:'가족',chukui:10,companion:0},
+  {id:4,name:'작은형',side:'groom',relation:'가족',chukui:20,companion:0},
+  {id:5,name:'장우혁',side:'groom',relation:'친구',chukui:20,companion:0},
+  {id:6,name:'박영우',side:'groom',relation:'친구',chukui:20,companion:0},
+  {id:7,name:'최준서',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:8,name:'김동건',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:9,name:'차승준',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:10,name:'김성진',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:11,name:'강진모',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:12,name:'김현겸',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:13,name:'차수연',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:14,name:'고동건',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:15,name:'문소연',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:16,name:'이다현',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:17,name:'장재현',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:18,name:'임승재',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:19,name:'박희민',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:20,name:'양지수',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:21,name:'노우혁',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:22,name:'장재혁',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:23,name:'김태림',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:24,name:'표재민',side:'groom',relation:'친구',chukui:15,companion:0},
+  {id:25,name:'김창준',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:26,name:'김태윤',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:27,name:'이민규',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:28,name:'김예진',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:29,name:'노유정',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:30,name:'곽지성',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:31,name:'박하연',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:32,name:'정민주',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:33,name:'이유나',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:34,name:'하나영',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:35,name:'김진호',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:36,name:'한태희',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:37,name:'정성현',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:38,name:'박유나',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:39,name:'이은채',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:40,name:'여수지',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:41,name:'배예람',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:42,name:'배하은',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:43,name:'손지호',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:44,name:'김현우',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:45,name:'김승환',side:'groom',relation:'학교',chukui:15,companion:0},
+  {id:46,name:'정승욱',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:47,name:'정성현',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:48,name:'박준서',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:49,name:'이충현',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:50,name:'조용준',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:51,name:'김민수 교수님',side:'groom',relation:'학교',chukui:20,companion:0},
+  {id:52,name:'박범준',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:53,name:'장철홍',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:54,name:'하승철',side:'groom',relation:'학교',chukui:10,companion:0},
+  {id:55,name:'김찬진',side:'groom',relation:'친구',chukui:10,companion:0},
+  {id:56,name:'조연준',side:'groom',relation:'친구',chukui:10,companion:0},
+  // 신부측 (bride)
+  {id:101,name:'손지혜',side:'bride',relation:'학교',chukui:50,companion:0},
+  {id:102,name:'김하늘',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:103,name:'김혜진',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:104,name:'서찬희',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:105,name:'도인수',side:'bride',relation:'친구',chukui:30,companion:0},
+  {id:106,name:'서동수',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:107,name:'김정아',side:'bride',relation:'학교',chukui:30,companion:2},
+  {id:108,name:'갈미나',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:109,name:'김하늘(여)',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:110,name:'손민수',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:111,name:'유현지',side:'bride',relation:'친구',chukui:20,companion:1},
+  {id:112,name:'장여진',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:113,name:'권수정(팀장)',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:114,name:'오샛별',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:115,name:'송선희',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:116,name:'박소임',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:117,name:'조영은',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:118,name:'한진실',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:119,name:'노지현',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:120,name:'이경민',side:'bride',relation:'직장',chukui:15,companion:0},
+  {id:121,name:'김어진',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:122,name:'강민솔',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:123,name:'우수원',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:124,name:'김유진',side:'bride',relation:'학교',chukui:30,companion:0},
+  {id:125,name:'장진혁',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:126,name:'강민하',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:127,name:'김소영',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:128,name:'이소미',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:129,name:'임수연',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:130,name:'김서영',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:131,name:'황영민',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:132,name:'이진석',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:133,name:'정호성',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:134,name:'박유리',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:135,name:'김도영',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:136,name:'강현지',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:137,name:'김민하',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:138,name:'이해홍',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:139,name:'전채영',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:140,name:'이혜민',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:141,name:'김진영',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:142,name:'작은 삼촌 (친가)',side:'bride',relation:'가족',chukui:20,companion:1},
+  {id:143,name:'큰삼촌(친가)',side:'bride',relation:'가족',chukui:20,companion:1},
+  {id:144,name:'사촌언니 (외가)',side:'bride',relation:'가족',chukui:50,companion:3},
+  {id:145,name:'작은삼촌(외가)',side:'bride',relation:'가족',chukui:20,companion:0},
+  {id:146,name:'큰삼촌(외가)',side:'bride',relation:'가족',chukui:30,companion:0},
+  {id:147,name:'고모(친가)',side:'bride',relation:'가족',chukui:100,companion:2},
+  {id:148,name:'윤준호',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:149,name:'정희헌',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:150,name:'이명호',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:151,name:'김예지',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:152,name:'오민혁',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:153,name:'홍희지',side:'bride',relation:'친구',chukui:10,companion:0},
+  {id:154,name:'김규리',side:'bride',relation:'친구',chukui:10,companion:0},
+  {id:155,name:'김가을',side:'bride',relation:'친구',chukui:10,companion:0},
+  {id:156,name:'박세원',side:'bride',relation:'친구',chukui:10,companion:0},
+  {id:157,name:'박재욱',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:158,name:'조현준',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:159,name:'최서영',side:'bride',relation:'친구',chukui:20,companion:1},
+  {id:160,name:'김주영',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:161,name:'김수빈',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:162,name:'김예본',side:'bride',relation:'친구',chukui:15,companion:0},
+  {id:163,name:'이윤상',side:'bride',relation:'친구',chukui:30,companion:2},
+  {id:164,name:'오세영',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:165,name:'김세령',side:'bride',relation:'학교',chukui:10,companion:0},
+  {id:166,name:'이은경교수님',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:167,name:'이호찬 교수님',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:168,name:'송영섭교수님',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:169,name:'임하영',side:'bride',relation:'친구',chukui:15,companion:0},
+  {id:170,name:'이신우 전무님',side:'bride',relation:'직장',chukui:20,companion:0},
+  {id:171,name:'정자영 교수님',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:172,name:'장경국교수님',side:'bride',relation:'학교',chukui:20,companion:0},
+  {id:173,name:'문지훈',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:174,name:'이동성',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:175,name:'김지은',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:176,name:'김찬미',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:177,name:'최승석',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:178,name:'김주영',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:179,name:'김수현',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:180,name:'어경진',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:181,name:'박원철 교수님',side:'bride',relation:'학교',chukui:15,companion:0},
+  {id:182,name:'이상군',side:'bride',relation:'친구',chukui:20,companion:0},
+  {id:183,name:'엄마',side:'bride',relation:'가족',chukui:15,companion:0},
+  {id:184,name:'아빠',side:'bride',relation:'가족',chukui:15,companion:0},
+  {id:185,name:'친할머니, 할아버지',side:'bride',relation:'가족',chukui:50,companion:1},
+  {id:186,name:'외할머니',side:'bride',relation:'가족',chukui:15,companion:0},
+];
+
+// Load guests: use localStorage if exists, otherwise use defaults
+let savedGuests = localStorage.getItem('weddingGuests');
+let guests = savedGuests ? JSON.parse(savedGuests) : JSON.parse(JSON.stringify(DEFAULT_GUESTS));
+if (!savedGuests) localStorage.setItem('weddingGuests', JSON.stringify(guests));
 let currentGuestTab = 'groom';
+
+function toggleBulkImport() {
+  const panel = document.getElementById('bulkImportPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+function bulkImportGuests() {
+  const text = document.getElementById('bulkImportText').value.trim();
+  if (!text) return;
+  const validRels = ['가족','친척','친구','직장','학교','기타'];
+  const lines = text.split('\n').filter(l => l.trim());
+  let count = 0;
+  lines.forEach(line => {
+    const cols = line.split('\t').map(c => c.trim());
+    if (!cols[0]) return;
+    const name = cols[0];
+    let relation = cols[1] || '기타';
+    if (!validRels.includes(relation)) relation = '기타';
+    const chukui = parseInt(cols[2]) || 15;
+    const companion = parseInt(cols[3]) || 0;
+    guests.push({ id: Date.now() + Math.random() * 10000, name, side: currentGuestTab, relation, chukui, companion });
+    count++;
+  });
+  localStorage.setItem('weddingGuests', JSON.stringify(guests));
+  renderGuests();
+  document.getElementById('bulkImportText').value = '';
+  document.getElementById('bulkImportResult').textContent = count + '명 추가 완료!';
+  setTimeout(() => { document.getElementById('bulkImportResult').textContent = ''; }, 3000);
+}
+
+function resetToDefault() {
+  if (!confirm('기존 하객 데이터를 삭제하고 기본 데이터로 복원하시겠습니까?')) return;
+  guests = JSON.parse(JSON.stringify(DEFAULT_GUESTS));
+  localStorage.setItem('weddingGuests', JSON.stringify(guests));
+  renderGuests();
+}
 
 function switchGuestTab(side) {
   currentGuestTab = side;
