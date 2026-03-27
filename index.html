@@ -1,0 +1,2249 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결혼 준비 플래너 2028</title>
+<style>
+  :root {
+    --primary: #b8860b;
+    --primary-light: #daa520;
+    --primary-bg: #fdf8e8;
+    --accent: #8b4513;
+    --success: #2e7d32;
+    --warning: #f57c00;
+    --danger: #c62828;
+    --bg: #faf9f6;
+    --card: #ffffff;
+    --text: #2c2c2c;
+    --text-light: #666;
+    --border: #e8e0d0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #2c1810 0%, #4a2c20 50%, #6b3a2a 100%);
+    color: white;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23daa520' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+  .header h1 { font-size: 2rem; position: relative; z-index: 1; }
+  .header h1 span { color: var(--primary-light); }
+  .header p { opacity: 0.85; margin-top: 0.5rem; position: relative; z-index: 1; font-size: 1.05rem; }
+
+  /* Navigation */
+  .nav {
+    background: var(--card);
+    border-bottom: 2px solid var(--border);
+    padding: 0 1rem;
+    display: flex;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .nav button {
+    background: none;
+    border: none;
+    padding: 1rem 1.2rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .nav button:hover { color: var(--primary); }
+  .nav button.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 700;
+  }
+
+  /* Main Container */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .card h2 {
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h3 {
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+
+  /* Summary Cards Grid */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .summary-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.2rem;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    transition: transform 0.2s;
+  }
+  .summary-card:hover { transform: translateY(-2px); }
+  .summary-card .label { font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.3rem; }
+  .summary-card .value { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+  .summary-card .sub { font-size: 0.8rem; color: var(--text-light); margin-top: 0.3rem; }
+  .summary-card.highlight { background: linear-gradient(135deg, var(--primary-bg), #fff8e1); border-color: var(--primary-light); }
+
+  /* Budget Table */
+  .budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .budget-table th, .budget-table td {
+    padding: 0.75rem 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .budget-table th {
+    background: var(--primary-bg);
+    font-weight: 600;
+    color: var(--accent);
+    position: sticky;
+    top: 0;
+  }
+  .budget-table tr:hover { background: #fafafa; }
+  .budget-table .amount { text-align: right; font-weight: 600; white-space: nowrap; }
+  .budget-table .note { font-size: 0.8rem; color: var(--text-light); }
+  .budget-table tfoot td {
+    font-weight: 700;
+    background: var(--primary-bg);
+    border-top: 2px solid var(--primary);
+  }
+
+  /* Range Slider */
+  .budget-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .budget-control label { font-weight: 600; white-space: nowrap; }
+  .budget-control select, .budget-control input[type="range"] {
+    flex: 1;
+    min-width: 150px;
+  }
+  select {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: white;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .range-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 100px;
+    text-align: right;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--primary-light), var(--primary));
+    border-radius: 2px;
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.2rem;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.85rem;
+    top: 1.2rem;
+    width: 14px; height: 14px;
+    background: var(--primary);
+    border-radius: 50%;
+    border: 3px solid var(--primary-bg);
+  }
+  .timeline-item.completed::before { background: var(--success); }
+  .timeline-item.current::before {
+    background: var(--warning);
+    box-shadow: 0 0 0 4px rgba(245,124,0,0.2);
+  }
+  .timeline-date {
+    font-size: 0.8rem;
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .timeline-title { font-weight: 600; margin: 0.3rem 0; }
+  .timeline-desc { font-size: 0.85rem; color: var(--text-light); }
+  .timeline-cost {
+    display: inline-block;
+    background: var(--primary-bg);
+    color: var(--accent);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+
+  /* Savings Chart */
+  .chart-container {
+    width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 200px;
+    padding: 0 0 2rem 0;
+    position: relative;
+  }
+  .bar-group {
+    flex: 1;
+    min-width: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .bar {
+    width: 100%;
+    max-width: 35px;
+    background: linear-gradient(to top, var(--primary), var(--primary-light));
+    border-radius: 4px 4px 0 0;
+    transition: height 0.5s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .bar:hover { opacity: 0.85; }
+  .bar-label {
+    font-size: 0.65rem;
+    color: var(--text-light);
+    margin-top: 0.3rem;
+    text-align: center;
+    transform: rotate(-45deg);
+    white-space: nowrap;
+  }
+  .bar-value {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.2rem;
+  }
+
+  /* Credit Card Section */
+  .cc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  .cc-card {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .cc-card:hover { border-color: var(--primary-light); transform: translateY(-2px); }
+  .cc-card.recommended {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, #fffef5, #fff8e1);
+  }
+  .cc-card.recommended::after {
+    content: 'BEST';
+    position: absolute;
+    top: -8px; right: 12px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+  .cc-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.3rem; }
+  .cc-issuer { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.8rem; }
+  .cc-features { list-style: none; }
+  .cc-features li {
+    font-size: 0.85rem;
+    padding: 0.3rem 0;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .cc-features li::before {
+    content: '\2713';
+    position: absolute;
+    left: 0;
+    color: var(--success);
+    font-weight: 700;
+  }
+  .cc-annual { font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem; font-style: italic; }
+
+  /* Checklist */
+  .checklist-group { margin-bottom: 1.5rem; }
+  .checklist-group h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-bg);
+    margin-bottom: 0.8rem;
+  }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .checklist-item input[type="checkbox"] {
+    margin-top: 0.2rem;
+    width: 18px; height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+  .checklist-item label {
+    flex: 1;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .checklist-item label.checked { text-decoration: line-through; color: var(--text-light); }
+  .checklist-item .due {
+    font-size: 0.75rem;
+    color: var(--warning);
+    white-space: nowrap;
+  }
+
+  /* Progress Bar */
+  .progress-container { margin: 1rem 0; }
+  .progress-bar {
+    height: 12px;
+    background: #eee;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    border-radius: 6px;
+    transition: width 0.5s ease;
+  }
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.3rem;
+  }
+
+  /* Monthly Savings Table */
+  .savings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .savings-table th {
+    background: var(--primary-bg);
+    padding: 0.6rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+  }
+  .savings-table td {
+    padding: 0.5rem 0.6rem;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .savings-table tr:nth-child(even) { background: #fafafa; }
+  .savings-table .spending-month { background: #fff3e0; }
+  .savings-table .highlight-row { background: #e8f5e9; font-weight: 600; }
+
+  /* Tips */
+  .tip-box {
+    background: #e8f5e9;
+    border-left: 4px solid var(--success);
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    margin: 0.8rem 0;
+    font-size: 0.9rem;
+  }
+  .tip-box.warning {
+    background: #fff3e0;
+    border-left-color: var(--warning);
+  }
+  .tip-box strong { display: block; margin-bottom: 0.3rem; }
+
+  /* Dday */
+  .dday-widget {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #2c1810, #4a2c20);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .dday-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary-light);
+  }
+  .dday-label { font-size: 0.9rem; opacity: 0.8; }
+
+  /* Input Group */
+  .input-group {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .input-group label {
+    font-weight: 600;
+    min-width: 120px;
+  }
+  .input-group input, .input-group select {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 150px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.5rem; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .cc-grid { grid-template-columns: 1fr; }
+    .nav button { padding: 0.8rem 0.8rem; font-size: 0.8rem; }
+    .card { padding: 1rem; }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section.active { animation: fadeIn 0.3s ease; }
+
+  /* Tab badge */
+  .badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+    vertical-align: top;
+  }
+
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Honeymoon cards */
+  .hm-card {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .hm-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .hm-card .hm-tag {
+    position: absolute;
+    top: 12px; right: 12px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+  .hm-header { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.8rem; }
+  .hm-header h3 { font-size: 1.15rem; margin: 0; }
+  .hm-header .hm-country { font-size: 0.8rem; color: var(--text-light); }
+  .hm-header .hm-days { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
+  .hm-costs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.5rem;
+    margin: 0.8rem 0;
+  }
+  .hm-cost-item {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 0.5rem 0.7rem;
+    text-align: center;
+  }
+  .hm-cost-item .cost-label { font-size: 0.7rem; color: var(--text-light); }
+  .hm-cost-item .cost-value { font-size: 0.95rem; font-weight: 700; color: var(--primary); }
+  .hm-cost-item .cost-note { font-size: 0.65rem; color: var(--text-light); }
+  .hm-total {
+    background: var(--primary-bg);
+    border-radius: 8px;
+    padding: 0.6rem;
+    text-align: center;
+    margin: 0.8rem 0;
+  }
+  .hm-total .total-label { font-size: 0.8rem; color: var(--accent); }
+  .hm-total .total-value { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+  .hm-lists { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.8rem; }
+  .hm-list h4 { font-size: 0.8rem; margin-bottom: 0.3rem; }
+  .hm-list ul { list-style: none; font-size: 0.8rem; }
+  .hm-list ul li { padding: 0.15rem 0; padding-left: 1rem; position: relative; }
+  .hm-list ul li::before { position: absolute; left: 0; }
+  .hm-list.pros ul li::before { content: '+'; color: var(--success); font-weight: 700; }
+  .hm-list.cons ul li::before { content: '-'; color: var(--danger); font-weight: 700; }
+  .hm-best-time { font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem; }
+
+  /* Venue cards */
+  .venue-card {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s;
+  }
+  .venue-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+  .venue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  .venue-header h3 { font-size: 1.1rem; margin: 0; }
+  .venue-tier {
+    font-size: 0.7rem; font-weight: 700; padding: 2px 10px;
+    border-radius: 20px; color: white;
+  }
+  .venue-info { font-size: 0.82rem; color: var(--text-light); margin-bottom: 0.8rem; }
+  .venue-scores {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;
+    margin: 0.6rem 0; font-size: 0.85rem;
+  }
+  .venue-scores .vs-item { display: flex; justify-content: space-between; padding: 0.3rem 0; }
+  .venue-scores .vs-label { color: var(--text-light); }
+  .venue-review {
+    background: #f5f5f5; border-radius: 8px; padding: 0.6rem 0.8rem;
+    font-size: 0.82rem; font-style: italic; color: var(--text);
+    margin: 0.6rem 0; border-left: 3px solid var(--primary);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Wedding <span>Planner</span> 2028</h1>
+  <p>미소 &amp; 우석의 결혼 준비 종합 플래너</p>
+</div>
+
+<nav class="nav" id="nav">
+  <button class="active" data-tab="dashboard">대시보드</button>
+  <button data-tab="budget">예산 상세</button>
+  <button data-tab="savings">월별 저축</button>
+  <button data-tab="timeline">준비 일정</button>
+  <button data-tab="checklist">체크리스트</button>
+  <button data-tab="venue">웨딩홀 비교</button>
+  <button data-tab="honeymoon">신혼여행</button>
+  <button data-tab="guests">하객 리스트</button>
+  <button data-tab="cards">신용카드</button>
+  <button data-tab="tips">꿀팁</button>
+</nav>
+
+<div class="container">
+
+<!-- ==================== DASHBOARD ==================== -->
+<div class="section active" id="sec-dashboard">
+  <div class="input-group">
+    <label>예식 예정월:</label>
+    <select id="weddingMonth">
+      <option value="2028-01">2028년 1월</option>
+      <option value="2028-02">2028년 2월</option>
+      <option value="2028-03" selected>2028년 3월</option>
+      <option value="2028-04">2028년 4월</option>
+      <option value="2028-05">2028년 5월</option>
+      <option value="2028-06">2028년 6월</option>
+      <option value="2028-07">2028년 7월</option>
+    </select>
+    <label>예산 등급:</label>
+    <select id="budgetTier">
+      <option value="economy">절약형 (~2,200만)</option>
+      <option value="standard" selected>표준형 (~3,200만)</option>
+      <option value="premium">프리미엄 (~5,500만)</option>
+    </select>
+  </div>
+
+  <div id="ddayWidget" class="dday-widget">
+    <div class="dday-label">결혼식까지</div>
+    <div class="dday-number" id="ddayNumber">D-700</div>
+    <div class="dday-label" id="ddayDate">2028년 3월</div>
+  </div>
+
+  <div class="card" style="margin-bottom:1.2rem">
+    <h2>월 수입/지출 현황</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <h3 style="color:var(--primary)">미소 (신부)</h3>
+        <table class="budget-table" style="font-size:0.85rem">
+          <tr><td>월 수입</td><td class="amount">280만</td></tr>
+          <tr><td>고정 지출</td><td class="amount" style="color:var(--danger)">-180만</td></tr>
+          <tr><td>생활비</td><td class="amount" style="color:var(--danger)">-55만</td></tr>
+          <tr style="font-weight:700"><td>저축 가능</td><td class="amount" style="color:var(--success)">45만</td></tr>
+          <tr><td>성과급 (3,9월)</td><td class="amount" style="color:var(--success)">+100만</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 style="color:var(--primary)">우석 (신랑)</h3>
+        <table class="budget-table" style="font-size:0.85rem">
+          <tr><td>월 수입</td><td class="amount">180만</td></tr>
+          <tr><td>고정 지출</td><td class="amount" style="color:var(--danger)">-85만</td></tr>
+          <tr><td>생활비</td><td class="amount" style="color:var(--danger)">-55만</td></tr>
+          <tr style="font-weight:700"><td>저축 가능</td><td class="amount" style="color:var(--success)">40만</td></tr>
+          <tr><td>성과급</td><td class="amount">-</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-grid" id="summaryGrid">
+    <!-- filled by JS -->
+  </div>
+
+  <div class="card">
+    <h2>저축 진행률</h2>
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+      <div class="progress-text">
+        <span id="progressSaved">저축액: 0만원</span>
+        <span id="progressPercent">0%</span>
+      </div>
+    </div>
+    <div class="input-group" style="margin-top:1rem">
+      <label>현재 저축액(만원):</label>
+      <input type="number" id="currentSaved" value="0" min="0" step="10">
+      <button onclick="updateProgress()" style="padding:0.5rem 1rem;background:var(--primary);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">업데이트</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>월별 목표 저축액 차트</h2>
+    <div class="chart-container">
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BUDGET ==================== -->
+<div class="section" id="sec-budget">
+  <div class="card">
+    <h2>항목별 예상 비용</h2>
+    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:1rem;">
+      * 보증인원 156명 기준. 신랑/신부 양가 분담 전 총액. 축의금(하객 리스트 기준 2,345만) 별도.
+    </p>
+    <div class="tip-box" style="margin-bottom:1rem">
+      <strong>실제 웨딩홀 최저가 참고 (2025~2026 검색 기준)</strong>
+      서울대연구공원 웨딩홀: 대관료 340만 + 식대 5.8만/인 (150명 = 870만) = <b>총 1,210만원</b><br>
+      웨딩시티 신도림: 대관료 비수기 250만~ + 식대 6.3만/인 (150명 = 945만) = <b>총 1,195만원~</b><br>
+      비수기 + 일요일 오후 조합 시 대관료 최대 50% 절약 가능. 단, 2028년 기준 인상 가능성 있음.
+    </div>
+    <div class="table-scroll">
+      <table class="budget-table" id="budgetTable">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>세부내용</th>
+            <th class="amount">절약형</th>
+            <th class="amount">표준형</th>
+            <th class="amount">프리미엄</th>
+          </tr>
+        </thead>
+        <tbody id="budgetBody"></tbody>
+        <tfoot id="budgetFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>양가 분담 시뮬레이터</h2>
+    <div class="input-group">
+      <label>신랑측 부담(%):</label>
+      <input type="range" id="groomShare" min="0" max="100" value="50">
+      <span class="range-value" id="groomShareVal">50%</span>
+    </div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+      <div class="summary-card" style="flex:1;min-width:200px">
+        <div class="label">신랑측 부담액</div>
+        <div class="value" id="groomAmount">0만</div>
+      </div>
+      <div class="summary-card" style="flex:1;min-width:200px">
+        <div class="label">신부측 부담액</div>
+        <div class="value" id="brideAmount">0만</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SAVINGS ==================== -->
+<div class="section" id="sec-savings">
+  <div class="card">
+    <h2>월별 저축 & 지출 계획</h2>
+    <div class="tip-box">
+      <strong>미소 &amp; 우석 저축 전략</strong>
+      미소(280만 - 고정 180만 - 생활비 55만 = <b>45만</b>) + 우석(180만 - 고정 85만 - 생활비 55만 = <b>40만</b>) = <b>매월 85만원 저축</b><br>
+      미소 성과급(3월, 9월) 각 100만원 추가. 축의금 2,250만원은 결혼 당일 수령이므로 사전 자금과 별도 관리.
+    </div>
+    <div class="table-scroll">
+      <table class="savings-table" id="savingsTable">
+        <thead>
+          <tr>
+            <th>월</th>
+            <th>기본 저축</th>
+            <th>보너스 추가</th>
+            <th>지출 항목</th>
+            <th>지출액</th>
+            <th>누적 저축</th>
+          </tr>
+        </thead>
+        <tbody id="savingsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TIMELINE ==================== -->
+<div class="section" id="sec-timeline">
+  <div class="card">
+    <h2>결혼 준비 타임라인</h2>
+    <div class="timeline" id="timeline"></div>
+  </div>
+</div>
+
+<!-- ==================== CHECKLIST ==================== -->
+<div class="section" id="sec-checklist">
+  <div class="card">
+    <h2>준비 체크리스트</h2>
+    <div class="progress-container" style="margin-bottom:1.5rem">
+      <div class="progress-bar">
+        <div class="progress-fill" id="checkProgress" style="width:0%"></div>
+      </div>
+      <div class="progress-text">
+        <span id="checkCount">0 / 0 완료</span>
+        <span id="checkPercent">0%</span>
+      </div>
+    </div>
+    <div id="checklistContainer"></div>
+  </div>
+</div>
+
+<!-- ==================== CREDIT CARDS ==================== -->
+<div class="section" id="sec-cards">
+  <div class="card">
+    <h2>결혼 준비에 유리한 신용카드 추천</h2>
+    <div class="tip-box">
+      <strong>카드 선택 핵심 전략</strong>
+      결혼 준비 시 대규모 결제(웨딩홀, 드레스/메이크업, 제주촬영)가 집중되므로,
+      <b>마일리지 적립 + 무이자 할부 + 프로모션 혜택</b>이 핵심입니다.
+      신혼여행 항공권을 마일리지로 해결하면 200~400만원 절약 가능합니다.
+    </div>
+    <div class="cc-grid" id="ccGrid"></div>
+  </div>
+
+  <div class="card">
+    <h2>카드 활용 로드맵</h2>
+    <div class="timeline" id="cardTimeline"></div>
+  </div>
+</div>
+
+<!-- ==================== VENUE ==================== -->
+<div class="section" id="sec-venue">
+  <div class="card">
+    <h2>웨딩홀 비교 (156명 기준, 서울)</h2>
+    <div class="tip-box" style="margin-bottom:1rem">
+      <strong>가격은 2025~2026 검색 기준이며, 비수기/성수기에 따라 크게 달라집니다.</strong>
+      7월 결혼은 비수기에 해당해 대관료 할인이 큽니다. 반드시 직접 투어 후 최종 견적을 받으세요.
+    </div>
+    <div id="venueCards"></div>
+  </div>
+</div>
+
+<!-- ==================== HONEYMOON ==================== -->
+<div class="section" id="sec-honeymoon">
+  <div class="card">
+    <h2>신혼여행지별 예상 비용 비교 (2인 기준)</h2>
+    <div class="tip-box" style="margin-bottom:1rem">
+      <strong>7월 결혼 기준 신혼여행 추천 (2인 비용)</strong>
+      7월은 유럽/스위스가 최적기이고, 코타키나발루도 건기라 좋습니다. 칸쿤은 허리케인 시즌이라 비추천.
+      마일리지 카드로 항공권을 해결하면 항공비를 크게 절약할 수 있습니다.
+    </div>
+    <div id="honeymoonCards"></div>
+  </div>
+
+  <div class="card">
+    <h2>여행지 선택 → 예산 반영</h2>
+    <div class="input-group">
+      <label>신혼여행지:</label>
+      <select id="honeymoonSelect" onchange="selectHoneymoon()">
+        <optgroup label="가성비 (140~500만)">
+          <option value="cotakinabalu">코타키나발루 (140~300만)</option>
+          <option value="danang">다낭 (250~400만)</option>
+          <option value="bali">발리 (230~500만)</option>
+        </optgroup>
+        <optgroup label="프리미엄 (450~1,000만)">
+          <option value="santorini">산토리니 (450~800만)</option>
+          <option value="croatia">크로아티아 (450~700만)</option>
+          <option value="europe">유럽 (500~750만)</option>
+          <option value="hawaii">하와이 (550~1,000만)</option>
+          <option value="swiss">스위스 (550~900만)</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="tip-box warning" id="honeymoonResult"></div>
+  </div>
+</div>
+
+<!-- ==================== GUEST LIST ==================== -->
+<div class="section" id="sec-guests">
+  <div class="card">
+    <h2>하객 리스트 관리</h2>
+    <div class="summary-grid" style="margin-bottom:1rem">
+      <div class="summary-card" id="groomSummaryCard" style="cursor:pointer" onclick="switchGuestTab('groom')">
+        <div class="label">우석 (신랑측)</div>
+        <div class="value" id="groomGuestCount">0명</div>
+        <div class="sub" id="groomChukui">축의금 0만</div>
+      </div>
+      <div class="summary-card" id="brideSummaryCard" style="cursor:pointer" onclick="switchGuestTab('bride')">
+        <div class="label">미소 (신부측)</div>
+        <div class="value" id="brideGuestCount">0명</div>
+        <div class="sub" id="brideChukui">축의금 0만</div>
+      </div>
+      <div class="summary-card highlight">
+        <div class="label">전체 합계</div>
+        <div class="value" id="totalGuestCount">0명</div>
+        <div class="sub">보증인원 156명</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">예상 축의금 합계</div>
+        <div class="value" id="estChukui" style="color:var(--success)">0만</div>
+      </div>
+    </div>
+
+    <!-- 탭 버튼 -->
+    <div style="display:flex;margin-bottom:1rem;border-bottom:2px solid var(--border);">
+      <button id="guestTabGroom" onclick="switchGuestTab('groom')" style="flex:1;padding:0.7rem;border:none;background:none;cursor:pointer;font-weight:700;font-size:0.95rem;border-bottom:3px solid var(--primary);color:var(--primary);">우석 (신랑측)</button>
+      <button id="guestTabBride" onclick="switchGuestTab('bride')" style="flex:1;padding:0.7rem;border:none;background:none;cursor:pointer;font-weight:500;font-size:0.95rem;border-bottom:3px solid transparent;color:var(--text-light);">미소 (신부측)</button>
+    </div>
+
+    <!-- 입력 폼 -->
+    <div style="display:flex;gap:0.5rem;margin-bottom:0.8rem;flex-wrap:wrap;">
+      <input type="text" id="guestName" placeholder="이름" style="flex:2;min-width:80px;padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:8px;">
+      <select id="guestRelation" style="flex:1.5;min-width:100px;padding:0.5rem;border:1px solid var(--border);border-radius:8px;">
+        <option value="가족">가족</option>
+        <option value="친척">친척</option>
+        <option value="친구">친구</option>
+        <option value="직장">직장</option>
+        <option value="학교">학교</option>
+        <option value="기타">기타</option>
+      </select>
+      <input type="number" id="guestChukui" placeholder="축의금(만)" style="flex:1;min-width:70px;padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:8px;" value="15">
+      <input type="number" id="guestCompanion" placeholder="동반(명)" style="flex:1;min-width:70px;padding:0.5rem 0.8rem;border:1px solid var(--border);border-radius:8px;" value="0" min="0">
+      <button onclick="addGuest()" style="padding:0.5rem 1rem;background:var(--primary);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;white-space:nowrap;">추가</button>
+    </div>
+
+    <!-- 관계 필터 -->
+    <div style="margin-bottom:1rem;">
+      <select id="guestRelFilter" onchange="renderGuests()" style="padding:0.5rem;border:1px solid var(--border);border-radius:8px;">
+        <option value="all">관계 전체</option>
+        <option value="가족">가족</option>
+        <option value="친척">친척</option>
+        <option value="친구">친구</option>
+        <option value="직장">직장</option>
+        <option value="학교">학교</option>
+        <option value="기타">기타</option>
+      </select>
+    </div>
+
+    <!-- 신랑측 테이블 -->
+    <div id="groomGuestPanel">
+      <div class="table-scroll">
+        <table class="budget-table">
+          <thead>
+            <tr><th>이름</th><th>관계</th><th>예상 축의금</th><th>동반</th><th>인원수</th><th></th></tr>
+          </thead>
+          <tbody id="groomGuestBody"></tbody>
+        </table>
+      </div>
+      <p id="groomGuestEmpty" style="text-align:center;color:var(--text-light);padding:2rem 0;">아직 등록된 신랑측 하객이 없습니다.</p>
+    </div>
+
+    <!-- 신부측 테이블 -->
+    <div id="brideGuestPanel" style="display:none;">
+      <div class="table-scroll">
+        <table class="budget-table">
+          <thead>
+            <tr><th>이름</th><th>관계</th><th>예상 축의금</th><th>동반</th><th>인원수</th><th></th></tr>
+          </thead>
+          <tbody id="brideGuestBody"></tbody>
+        </table>
+      </div>
+      <p id="brideGuestEmpty" style="text-align:center;color:var(--text-light);padding:2rem 0;">아직 등록된 신부측 하객이 없습니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TIPS ==================== -->
+<div class="section" id="sec-tips">
+  <div class="card">
+    <h2>결혼 준비 절약 꿀팁</h2>
+    <div id="tipsContainer"></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ========== DATA ==========
+// 실제 하객 데이터 기반 (동적으로 계산)
+const GUEST_COUNT = 156; // 신랑56 + 신부100
+const FALLBACK_CHUKUIGEUM = 2345; // 하객 리스트 미등록 시 기본값
+
+// 개인 재정 (고정지출 + 생활비 55만 각각 제외)
+const LIVING_COST = 55; // 인당 생활비 (식비, 교통, 여가 등)
+const MISO = { name: '미소(신부)', income: 280, fixed: 180, living: LIVING_COST, spare: 280 - 180 - LIVING_COST }; // 45만
+const WOOSEOK = { name: '우석(신랑)', income: 180, fixed: 85, living: LIVING_COST, spare: 180 - 85 - LIVING_COST }; // 40만
+const MONTHLY_SAVINGS = MISO.spare + WOOSEOK.spare; // 85만원/월
+const BONUS_AMOUNT = 100; // 미소 성과급 (3월, 9월) 각 100만원
+const BONUS_MONTHS = [3, 9]; // 성과급 지급월
+
+const BUDGET_ITEMS = [
+  { name: '웨딩홀 대관료', detail: '비수기 200만~ / 성수기 400~700만 (서울대연구공원 340만, 웨딩시티신도림 비수기 250만~)', economy: 200, standard: 350, premium: 700 },
+  { name: '웨딩홀 식대 (156명)', detail: '1인 5.8만~8만 (서울대연구공원 5.8만/인, 일반컨벤션 6~8만/인)', economy: 905, standard: 1061, premium: 1248 },
+  { name: '제주도 스냅촬영', detail: '제주 스냅 촬영 + 항공/숙박/앨범', economy: 100, standard: 180, premium: 350 },
+  { name: '스드메 (드레스)', detail: '본식 + 촬영용 2벌 기준', economy: 80, standard: 150, premium: 300 },
+  { name: '스드메 (메이크업)', detail: '본식 + 촬영 + 리허설', economy: 40, standard: 80, premium: 150 },
+  { name: '예물 (반지)', detail: '커플링 + 예물반지', economy: 100, standard: 250, premium: 500 },
+  { name: '예물 (시계/기타)', detail: '시계, 목걸이 등 (생략 가능)', economy: 0, standard: 100, premium: 300 },
+  { name: '예단', detail: '양가 예단 (이불, 한복 등)', economy: 50, standard: 200, premium: 400 },
+  { name: '전세 재계약', detail: '2027.07.10 현 거주지 재계약 (추가비용 없음 예상)', economy: 0, standard: 0, premium: 0 },
+  { name: '신혼여행', detail: '코타키나발루 4박 5일 (항공+숙박+경비)', economy: 140, standard: 220, premium: 300 },
+  { name: '청첩장', detail: '모바일 + 실물 (150부 기준)', economy: 10, standard: 25, premium: 50 },
+  { name: '폐백/이바지', detail: '폐백음식 + 이바지', economy: 20, standard: 40, premium: 70 },
+  { name: '부케/꽃장식', detail: '부케 + 본식 꽃장식', economy: 10, standard: 25, premium: 50 },
+  { name: '영상/사진 (본식)', detail: '본식 스냅 + 영상 촬영', economy: 50, standard: 100, premium: 200 },
+  { name: '축가/사회/연주', detail: '지인 부탁 시 0원 가능', economy: 0, standard: 20, premium: 80 },
+  { name: '기타/예비비', detail: '교통, 숙박, 뷰티, 예비비 등', economy: 50, standard: 80, premium: 150 },
+];
+
+const TIMELINE_DATA = [
+  { date: '2026.04~06', title: 'D-27~25개월 | 기초 준비', desc: '양가 상견례, 결혼 예산 확정, 마일리지 카드 발급, 결혼자금 통장 개설, 웨딩박람회 참가', cost: '카드 발급 비용 없음', phase: 'past' },
+  { date: '2026.07~09', title: 'D-24~22개월 | 웨딩홀 투어 & 예약', desc: '최소 5곳 투어, 날짜 확정, 계약금 결제. 본식스냅/영상 업체 리서치 시작 (인기 업체는 1년 전 예약)', cost: '계약금 60~130만', phase: 'past' },
+  { date: '2026.10~12', title: 'D-21~19개월 | 드메 계약 + 제주 스냅', desc: '드레스샵/메이크업 업체 선정 계약. 제주 스냅 업체 3곳 비교 후 예약. 본식스냅/영상 업체 예약 (인기업체 마감 빠름)', cost: '계약금 50~100만', phase: 'future' },
+  { date: '2027.01~03', title: 'D-18~16개월 | 예물 & 예단', desc: '예물 반지/시계 구매 (면세점 활용). 예단 범위 양가 협의 및 준비', cost: '200~500만', phase: 'future' },
+  { date: '2027.04~06', title: 'D-15~13개월 | 제주 스냅촬영', desc: '제주도 스냅촬영 진행 (항공+숙박+촬영). 촬영 후 보정본 수령까지 4~8주 소요', cost: '100~350만', phase: 'future' },
+  { date: '2027.07', title: 'D-12개월 | 전세 재계약', desc: '현 거주지 전세 재계약 (7/10 예정). 보증금 변동 확인', cost: '보증금 변동분', phase: 'future' },
+  { date: '2027.08~09', title: 'D-11~10개월 | 세부 준비 시작', desc: '신혼여행지 확정 및 예약 (항공+숙박). 하객 리스트 최종 확정. 축가/사회자 섭외', cost: '여행 예약금 50~100만', phase: 'future' },
+  { date: '2027.10~11', title: 'D-9~8개월 | 청첩장 & 소품', desc: '청첩장 시안 확정 및 제작 (모바일+실물). 웰컴보드/포토테이블 등 웨딩 소품 준비 시작', cost: '청첩장 25만~', phase: 'future' },
+  { date: '2027.12~2028.01', title: 'D-7~6개월 | 중간 점검', desc: '웨딩홀/드메/스냅 업체 중간 확인. 식전영상 소스 사진/영상 수집 시작. 피부관리 시작 (선택)', cost: '-', phase: 'future' },
+  { date: '2028.02 (D-5개월)', title: 'D-150일 | 식전영상 제작 시작', desc: '식전영상 사진/영상 선별 및 편집 시작 (셀프 2개월, 업체 1개월). 폐백/이바지 업체 알아보기', cost: '식전영상 업체 시 30~80만', phase: 'future' },
+  { date: '2028.03 (D-4개월)', title: 'D-120일 | 드레스 1차 피팅', desc: '드레스 1차 가봉. 체형 변화 감안 (다이어트 중이면 최종 피팅은 D-30에). 식전영상 중간 점검', cost: '-', phase: 'future' },
+  { date: '2028.04 (D-3개월)', title: 'D-90일 | 최종 확정 단계', desc: '청첩장 발송 시작 (모바일 먼저). 폐백음식/이바지 업체 계약. 부케 상담. 사회자/축가자 확정 및 축가 곡 선정. 신혼여행 최종 일정 확정', cost: '폐백+이바지 40만~', phase: 'future' },
+  { date: '2028.05 (D-2개월)', title: 'D-60일 | 피팅 & 리허설', desc: '드레스 최종 피팅 (2차 가봉). 메이크업 리허설. 식전영상 완성 및 웨딩홀에 전달. 본식 영상팀과 촬영 동선 협의', cost: '드메 잔금', phase: 'future' },
+  { date: '2028.06 초 (D-45일)', title: 'D-45일 | 실물 청첩장 발송', desc: '실물 청첩장 발송 마감. 하객 최종 인원 확정 → 웨딩홀에 보증인원 통보. 축의금 수금 담당 지정', cost: '-', phase: 'future' },
+  { date: '2028.06 중 (D-30일)', title: 'D-30일 | 최종 리허설', desc: '사회자/축가자와 예식 리허설. 웨딩홀 담당자와 식순/동선 최종 확인. 본식스냅 작가와 포즈/컷 리스트 협의', cost: '-', phase: 'future' },
+  { date: '2028.06 말 (D-14일)', title: 'D-14일 | 소품 & 최종 확인', desc: '부케 최종 주문. 웰컴보드/방명록/포토테이블 소품 완성. 폐백음식 최종 확인. 예복/한복 준비 완료 확인', cost: '부케 10~25만', phase: 'future' },
+  { date: 'D-7일', title: 'D-7일 | 마지막 점검', desc: '웨딩홀 최종 확인 (음향/조명/영상 테스트). 축의금 봉투/수금함 준비. 당일 타임테이블 작성 (신랑신부/양가부모/친구 역할 배분). 신혼여행 짐 싸기', cost: '-', phase: 'future' },
+  { date: 'D-1일', title: 'D-1 | 전날 준비', desc: '예식장에 소품/식전영상 USB 전달. 드레스/예복/한복 최종 점검. 충분한 수면!', cost: '-', phase: 'future' },
+  { date: 'D-Day', title: 'D-Day | The Big Day!', desc: '웨딩홀 잔금 정산. 본식스냅/영상 촬영. 축의금 수령. 폐백. 신혼여행 출발!', cost: '잔금 정산', phase: 'future' },
+  { date: 'D+2~8주', title: '결혼 후 | 사진 수령', desc: '본식스냅 원본 수령 (1~2주). 사진 셀렉 (2~4주). 보정본 수령 (셀렉 후 4~6주). 앨범 제작 수령 (보정 후 4~8주). 총 3~6개월 소요', cost: '앨범 추가 시 별도', phase: 'future' },
+];
+
+const CHECKLIST_DATA = {
+  'D-27~25개월 | 기초 준비 (2026.04~06)': [
+    { text: '양가 상견례 일정 잡기', due: '2026.05' },
+    { text: '결혼 예산 양가 협의', due: '2026.05' },
+    { text: '마일리지 신용카드 발급', due: '2026.04' },
+    { text: '결혼자금 전용 통장 개설 (CMA/파킹)', due: '2026.04' },
+    { text: '웨딩박람회 참가 (정보 수집)', due: '2026.06' },
+    { text: '웨딩 플래너 상담 (선택)', due: '2026.06' },
+    { text: '피부과 상담 (여드름/톤 관리 장기 플랜)', due: '2026.06' },
+  ],
+  'D-24~22개월 | 웨딩홀 (2026.07~09)': [
+    { text: '웨딩홀 5곳 이상 투어', due: '2026.08' },
+    { text: '웨딩홀 계약 & 날짜 확정', due: '2026.09' },
+    { text: '본식스냅/영상 업체 리서치 시작', due: '2026.09' },
+  ],
+  'D-21~19개월 | 드메+스냅 (2026.10~12)': [
+    { text: '드레스샵 3곳 이상 방문 & 계약', due: '2026.11' },
+    { text: '메이크업 업체 계약', due: '2026.12' },
+    { text: '제주 스냅촬영 업체 3곳 비교', due: '2026.11' },
+    { text: '제주 스냅촬영 업체 계약', due: '2026.12' },
+    { text: '본식스냅/영상 업체 예약 (인기업체 마감 빠름!)', due: '2026.12' },
+  ],
+  'D-18~16개월 | 예물/예단 (2027.01~03)': [
+    { text: '예물 반지 구매 (면세점 활용)', due: '2027.02' },
+    { text: '예물 시계/기타 구매', due: '2027.03' },
+    { text: '예단 범위 양가 협의', due: '2027.02' },
+    { text: '예단 준비 (이불/한복 등)', due: '2027.03' },
+  ],
+  'D-15~13개월 | 제주촬영 (2027.04~06)': [
+    { text: '제주 스냅촬영 일정 확정', due: '2027.04' },
+    { text: '제주 항공/숙박 예약', due: '2027.04' },
+    { text: '제주 스냅촬영 진행', due: '2027.05~06' },
+    { text: '제주 스냅 보정본 수령 확인 (촬영 후 4~8주)', due: '2027.07' },
+  ],
+  'D-12개월 | 전세 (2027.07)': [
+    { text: '전세 재계약 (7월 10일)', due: '2027.07' },
+    { text: '보증금 변동분 확인 & 준비', due: '2027.07' },
+  ],
+  'D-11~8개월 | 세부 준비 (2027.08~11)': [
+    { text: '신혼여행지 확정 & 항공/숙박 예약', due: '2027.09' },
+    { text: '하객 리스트 최종 확정 (156명)', due: '2027.09' },
+    { text: '축가자 섭외 & 곡 선정', due: '2027.09' },
+    { text: '사회자 섭외 (지인 or 전문)', due: '2027.09' },
+    { text: '청첩장 시안 확정 (모바일+실물)', due: '2027.10' },
+    { text: '청첩장 제작 발주', due: '2027.11' },
+    { text: '웰컴보드 디자인 확정', due: '2027.11' },
+  ],
+  'D-7~6개월 | 중간 점검 (2027.12~2028.01)': [
+    { text: '웨딩홀/드메/스냅 업체 중간 확인', due: '2027.12' },
+    { text: '식전영상 소스 사진/영상 수집 시작', due: '2027.12' },
+    { text: '피부관리 본격 시작 (선택)', due: '2028.01' },
+    { text: '다이어트/운동 시작 (선택)', due: '2028.01' },
+    { text: '혼인신고 서류 준비 (주민센터 확인)', due: '2028.01' },
+  ],
+  'D-5개월 | 식전영상 (2028.02)': [
+    { text: '식전영상 사진/영상 선별', due: '2028.02' },
+    { text: '식전영상 편집 시작 (셀프 시 2개월 필요)', due: '2028.02' },
+    { text: '식전영상 업체 의뢰 (업체 시 1개월)', due: '2028.02' },
+    { text: '폐백/이바지 업체 알아보기', due: '2028.02' },
+  ],
+  'D-4개월 | 1차 피팅 (2028.03)': [
+    { text: '드레스 1차 가봉 (체형 변화 확인)', due: '2028.03' },
+    { text: '식전영상 중간 점검', due: '2028.03' },
+    { text: '예복 (신랑 턱시도) 맞춤/대여 예약', due: '2028.03' },
+    { text: '양가 어머니 한복 맞춤', due: '2028.03' },
+  ],
+  'D-3개월 (D-90) | 최종 확정 (2028.04)': [
+    { text: '모바일 청첩장 발송 시작', due: '2028.04' },
+    { text: '폐백음식 업체 계약', due: '2028.04' },
+    { text: '이바지 업체 계약', due: '2028.04' },
+    { text: '부케 업체 상담 & 디자인 선택', due: '2028.04' },
+    { text: '축가자 리허설 일정 잡기', due: '2028.04' },
+    { text: '신혼여행 최종 일정 확정', due: '2028.04' },
+    { text: '포토테이블 소품 준비 시작', due: '2028.04' },
+  ],
+  'D-2개월 (D-60) | 피팅+리허설 (2028.05)': [
+    { text: '드레스 최종 피팅 (2차 가봉)', due: '2028.05 초' },
+    { text: '메이크업 리허설', due: '2028.05 초' },
+    { text: '식전영상 완성 → 웨딩홀에 USB 전달', due: '2028.05 중' },
+    { text: '본식 영상팀과 촬영 동선 협의', due: '2028.05 중' },
+    { text: '사회자/축가자와 식순 확인', due: '2028.05 말' },
+    { text: '신혼여행 짐 리스트 작성', due: '2028.05 말' },
+  ],
+  'D-45일 (2028.06 초)': [
+    { text: '실물 청첩장 발송 마감', due: 'D-45' },
+    { text: '하객 최종 인원 확정 → 웨딩홀 보증인원 통보', due: 'D-45' },
+    { text: '축의금 수금 담당 지정 (신뢰할 수 있는 친구)', due: 'D-45' },
+  ],
+  'D-30일 (2028.06 중)': [
+    { text: '사회자/축가자와 예식 리허설', due: 'D-30' },
+    { text: '웨딩홀 담당자와 식순/동선 최종 확인', due: 'D-30' },
+    { text: '본식스냅 작가와 포즈/컷 리스트 협의', due: 'D-30' },
+    { text: '방명록/펜 준비', due: 'D-30' },
+  ],
+  'D-14일 (2028.06 말)': [
+    { text: '부케 최종 주문', due: 'D-14' },
+    { text: '웰컴보드/포토테이블 소품 완성', due: 'D-14' },
+    { text: '폐백음식 최종 확인 (수량/배송일)', due: 'D-14' },
+    { text: '예복/한복 최종 점검', due: 'D-14' },
+    { text: '네일아트 예약', due: 'D-14' },
+  ],
+  'D-7일': [
+    { text: '웨딩홀 최종 확인 (음향/조명/스크린 테스트)', due: 'D-7' },
+    { text: '축의금 봉투/수금함 준비', due: 'D-7' },
+    { text: '당일 타임테이블 작성 & 역할 배분', due: 'D-7' },
+    { text: '신혼여행 짐 싸기', due: 'D-7' },
+    { text: '비상약/생리용품/간식 챙기기', due: 'D-7' },
+  ],
+  'D-1일 (전날)': [
+    { text: '예식장에 소품/식전영상 USB 전달', due: 'D-1' },
+    { text: '드레스/예복/한복 최종 확인', due: 'D-1' },
+    { text: '충분한 수면 (일찍 자기!)', due: 'D-1' },
+  ],
+  'D+2~8주 (결혼 후)': [
+    { text: '본식스냅 원본 수령 (예식 후 1~2주)', due: 'D+2주' },
+    { text: '본식스냅 사진 셀렉 (원본 중 앨범용 선별)', due: 'D+4주' },
+    { text: '보정본 수령 (셀렉 후 4~6주)', due: 'D+8주' },
+    { text: '앨범 제작 수령 (보정 후 4~8주, 총 3~6개월)', due: 'D+16주' },
+    { text: '혼인신고 (결혼식 후 가능)', due: 'D+1개월 내' },
+    { text: '감사 인사 (축의금 정리 & 감사 문자)', due: 'D+1주' },
+  ],
+};
+
+const CREDIT_CARDS = [
+  {
+    name: '대한항공 스카이패스 카드',
+    issuer: '하나카드 / KB국민카드',
+    features: [
+      '국내외 가맹점 1,000원당 1~1.5마일 적립',
+      '대한항공 항공권 구매 시 추가 마일리지',
+      '공항 라운지 이용 (프리미엄 등급)',
+      '결혼 준비 대금결제로 마일리지 대량 적립',
+      '신혼여행 항공권 마일리지 발권 가능',
+    ],
+    annual: '연회비 3~5만원 / 프리미엄 15만원',
+    recommended: true,
+  },
+  {
+    name: '아시아나 아시아나클럽 카드',
+    issuer: '삼성카드 / 우리카드',
+    features: [
+      '1,000원당 1~2마일 적립 (가맹점별 차등)',
+      '아시아나 항공권 추가 적립',
+      '스타얼라이언스 제휴 항공사 사용 가능',
+      '면세점 할인 혜택',
+      '무이자 할부 2~6개월',
+    ],
+    annual: '연회비 3~5만원',
+    recommended: false,
+  },
+  {
+    name: '삼성 iD SIMPLE 카드',
+    issuer: '삼성카드',
+    features: [
+      '국내외 전 가맹점 0.8~1% 포인트 적립',
+      '백화점/대형마트 추가 적립',
+      '혼수 가전 구매 시 삼성 멤버십 포인트 연동',
+      '삼성전자 제품 할부 혜택',
+      '인테리어/가구 제휴 할인',
+    ],
+    annual: '연회비 1~2만원',
+    recommended: false,
+  },
+  {
+    name: '현대카드 M Series',
+    issuer: '현대카드',
+    features: [
+      'M포인트 전 가맹점 적립 (최대 1.5%)',
+      '백화점/아울렛 추가 포인트',
+      '무이자 할부 2~12개월 (이벤트 시)',
+      'PLCC 제휴처 추가 혜택',
+      '포인트로 항공마일 전환 가능',
+    ],
+    annual: '연회비 1.5~3만원',
+    recommended: false,
+  },
+  {
+    name: '신한 Mr.Life 카드',
+    issuer: '신한카드',
+    features: [
+      '생활 전 영역 0.7% 적립',
+      '인테리어/가구/가전 5% 할인 (월 한도)',
+      '주유/통신/보험 할인',
+      '무이자 할부 2~6개월',
+      '결혼 후 생활비 절약용으로도 유용',
+    ],
+    annual: '연회비 1~1.5만원',
+    recommended: false,
+  },
+];
+
+const CARD_TIMELINE = [
+  { date: '2026.04', title: '마일리지 카드 발급', desc: '항공 마일리지 카드 1장 + 생활 적립 카드 1장, 총 2장 운영 시작. 연회비가 들어도 마일리지 가치가 훨씬 큼.', cost: '' },
+  { date: '2026.07~09', title: '웨딩홀 계약금 결제', desc: '마일리지 카드로 계약금 결제. 60~130만원 = 약 600~1,300마일.', cost: '600~1,300마일' },
+  { date: '2026.10~12', title: '스드메 계약금 결제', desc: '카드로 계약금 결제 + 무이자 할부 활용.', cost: '500~1,000마일' },
+  { date: '2027.01~06', title: '예물 구매 (면세점 활용)', desc: '면세점에서 예물 구매 시 면세가 + 카드 적립 이중 혜택. 온라인 면세점 추가 할인.', cost: '2,000~5,000마일' },
+  { date: '2027.04~06', title: '제주 스냅촬영 결제', desc: '제주 항공+숙박+촬영비를 마일리지 카드로 결제. 100~350만원 = 1,000~3,500마일 적립.', cost: '1,000~3,500마일' },
+  { date: '2027.10~12', title: '누적 마일리지 확인', desc: '이 시점까지 약 15,000~30,000마일 누적 예상. 동남아 왕복 2인 = 약 30,000~50,000마일 필요.', cost: '총 15,000~30,000' },
+  { date: '결혼 1~2개월 전', title: '잔금 정산 + 여행 예약', desc: '웨딩홀/스드메 잔금을 카드로 결제. 마일리지 부족분은 포인트 전환 또는 현금 결합 발권.', cost: '추가 3,000~5,000마일' },
+];
+
+const TIPS = [
+  { title: '웨딩박람회를 적극 활용하세요', body: '대형 웨딩박람회에서는 웨딩홀, 스드메, 허니문 패키지를 시중가 대비 10~30% 저렴하게 계약할 수 있습니다. 단, 현장 계약을 강요받지 않도록 주의하세요. 여러 곳을 비교한 후 결정하세요.', type: 'tip' },
+  { title: '축의금으로 비용 일부 회수', body: '보증인원 150명 × 평균 15만원 = 약 2,250만원 예상. 웨딩홀 식대+대관료(1,070~1,900만원)를 축의금으로 충분히 커버 가능합니다. 다만 축의금은 결혼식 당일 수령이므로, 사전 지출 자금은 별도 준비가 필요합니다.', type: 'tip' },
+  { title: '제주 스냅촬영 절약 팁', body: '비수기(3~5월, 10~11월)에 촬영하면 숙박+항공이 저렴합니다. 평일 촬영 시 업체 할인도 가능. 제주 현지 업체가 서울 업체보다 20~30% 저렴한 경우가 많으니 비교해보세요.', type: 'tip' },
+  { title: '면세점 예물 구매로 이중 절약', body: '반지, 시계 등 예물은 면세점에서 구매하면 부가세 10% + 브랜드 할인을 받을 수 있습니다. 온라인 면세점 추가 쿠폰(5~15%)까지 활용하면 시중가 대비 20~30% 절약됩니다.', type: 'tip' },
+  { title: '스드메는 패키지보다 개별 계약 검토', body: '웨딩홀 연계 스드메 패키지는 편리하지만 비쌀 수 있습니다. 개별 업체와 직접 계약하면 10~20% 절약 가능합니다. 단, 업체 간 일정 조율을 직접 해야 합니다.', type: 'tip' },
+  { title: '신혼여행은 마일리지 + 비수기', body: '마일리지로 항공권을 해결하고, 비수기(1~3월, 9~11월)에 여행하면 숙박비도 30~50% 저렴합니다. 허니문 특가 상품도 확인하세요.', type: 'tip' },
+  { title: '결혼 준비 전용 통장 운영', body: '매달 저축금을 자동이체로 결혼 전용 통장에 모으세요. CMA 통장이나 파킹통장을 활용하면 이자 수입도 챙길 수 있습니다.', type: 'warning' },
+  { title: '보너스는 즉시 저축', body: '설/추석 상여금, 연말 보너스 등은 받는 즉시 결혼 통장에 넣으세요. 보너스 월에 추가 저축하면 매월 부담이 크게 줄어듭니다.', type: 'warning' },
+  { title: '불필요한 선택은 과감히 삭제', body: '예단을 간소화하거나, 축가/사회를 지인에게 부탁하거나, 폐백을 간소화하면 100~300만원을 절약할 수 있습니다. 양가가 합의하면 부담 없이 줄일 수 있는 항목들입니다.', type: 'tip' },
+  { title: '미소&우석 현실 판단: 절약형이 적정', body: '생활비 각 55만 제외 후 둘이 합산 월 85만원 저축 × 23개월 + 성과급 400만 = 약 2,355만원 모을 수 있습니다. 축의금 2,250만원은 당일 수령이라 사전비용에 못 쓰므로, 절약형(~2,200만)이 현실적으로 맞는 선택입니다. 표준형 이상은 양가 지원이 있어야 가능합니다.', type: 'warning' },
+  { title: '축의금은 "후불"이라는 점을 명심', body: '축의금 2,250만원은 결혼식 당일에야 수령합니다. 웨딩홀 잔금은 보통 결혼식 당일 or 직전 정산이라 축의금으로 커버 가능하지만, 그 전에 지출하는 드메/예물/제주촬영 등은 모두 사전 저축금으로 해결해야 합니다.', type: 'warning' },
+];
+
+const HONEYMOON_DATA = [
+  {
+    id: 'cotakinabalu', name: '코타키나발루', country: '말레이시아', days: '4박 5일',
+    tier: 'budget',
+    flight: { low: 50, high: 140, note: '직항 5시간, 비수기 1인 25~35만' },
+    hotel: { low: 60, high: 150, note: '4성급 리조트 1박 15~25만, 풀빌라 35~50만' },
+    expense: { low: 30, high: 50, note: '식비/액티비티/교통, 물가 저렴' },
+    total: { low: 140, high: 300 },
+    pros: ['가성비 최고', '석양이 아름다운 해변', '스노클링/다이빙 천국', '물가 저렴'],
+    cons: ['7월 약간 더움 (30~33℃)', '성수기 항공비 상승 가능'],
+    bestTime: '3~9월',
+    scores: { 1: {s:2,n:'1월 우기 — 비 잦고 바다 탁함'}, 3: {s:3,n:'3월 우기 끝나는 시기, 간헐적 비'}, 7: {s:4,n:'7월 건기, 여행 적합! 다만 더움'} },
+    tag: '가성비 1위',
+    color: '#4caf50',
+  },
+  {
+    id: 'danang', name: '다낭', country: '베트남', days: '4박 5일',
+    tier: 'budget',
+    flight: { low: 80, high: 120, note: '직항 4.5시간, 1인 40~60만' },
+    hotel: { low: 100, high: 240, note: '5성급 리조트 오션뷰 1박 25~35만, 풀빌라 40~60만' },
+    expense: { low: 50, high: 100, note: '스파/식비/액티비티, 프리미엄 스파 90분 5~7만' },
+    total: { low: 250, high: 400 },
+    pros: ['5성급 리조트 가성비', '프리미엄 스파 저렴', '한국인 친화적', '호이안/바나힐 관광'],
+    cons: ['7월 매우 더움 (35℃+)', '건기지만 간헐적 소나기'],
+    bestTime: '2~8월 (건기)',
+    scores: { 1: {s:2,n:'1월 우기 한가운데, 비 많고 바다 거침'}, 3: {s:4,n:'3월 건기 시작! 날씨 쾌적, 비수기 가격'}, 7: {s:3,n:'7월 건기지만 폭염. 리조트 휴양 위주면 OK'} },
+    tag: '리조트 가성비',
+    color: '#ff9800',
+  },
+  {
+    id: 'bali', name: '발리', country: '인도네시아', days: '5박 7일',
+    tier: 'budget',
+    flight: { low: 80, high: 160, note: '직항 7시간, 1인 40~80만' },
+    hotel: { low: 100, high: 250, note: '5성급 풀빌라 1박 20~50만, 우붓 리조트 15~30만' },
+    expense: { low: 50, high: 100, note: '스파/식비/투어, 물가 매우 저렴' },
+    total: { low: 230, high: 500 },
+    pros: ['풀빌라 가성비 최고', '우붓 계단식 논 절경', '스파/마사지 천국', '다양한 액티비티'],
+    cons: ['7시간 비행', '교통 혼잡 (차량 필수)', '관광지 호객행위'],
+    bestTime: '5~9월 (건기)',
+    scores: { 1: {s:2,n:'1월 우기 한가운데, 매일 폭우'}, 3: {s:3,n:'3월 우기 끝자락, 비 줄어듦. 비수기 가격'}, 7: {s:5,n:'7월 건기 최적! 습도 낮고 날씨 완벽'} },
+    tag: '풀빌라 천국',
+    color: '#009688',
+  },
+  {
+    id: 'europe', name: '유럽 (이탈리아/프랑스)', country: '이탈리아·프랑스', days: '7박 9일',
+    tier: 'premium',
+    flight: { low: 200, high: 360, note: '직항 11~12시간, 1인 100~180만' },
+    hotel: { low: 110, high: 200, note: '중급 호텔/에어비앤비 1박 15~30만' },
+    expense: { low: 150, high: 250, note: '식비/교통/입장료, 유럽 물가 높음' },
+    total: { low: 500, high: 750 },
+    pros: ['로마/피렌체/파리 로맨틱', '문화/미식 체험', '쇼핑 (면세)', '사진 명소 풍부'],
+    cons: ['7월 성수기라 항공+숙박 비쌈', '관광지 인파 최고조', '소매치기 주의'],
+    bestTime: '4~6월, 9~10월 (비수기 가성비) / 7월 (날씨 최고)',
+    scores: { 1: {s:1,n:'1월 겨울 — 춥고 일조시간 짧음. 비추천'}, 3: {s:3,n:'3월 초봄, 아직 쌀쌀. 관광객 적고 비수기 가격'}, 7: {s:5,n:'7월 최적기! 날씨 완벽, 밤 9시까지 밝음'} },
+    tag: '7월 최적',
+    color: '#3f51b5',
+  },
+  {
+    id: 'santorini', name: '산토리니', country: '그리스', days: '6박 8일',
+    tier: 'premium',
+    flight: { low: 200, high: 360, note: '경유 15~18시간 (이스탄불/도하), 1인 100~180만' },
+    hotel: { low: 150, high: 350, note: '이아 일몰뷰 호텔 1박 25~60만, 동굴호텔 인피니티풀' },
+    expense: { low: 100, high: 200, note: '식비/페리/와인투어, 그리스 물가 중상' },
+    total: { low: 450, high: 800 },
+    pros: ['세계 3대 일몰 (이아)', '하얀 건물+파란 지붕 포토스팟', '와인/해산물 미식', '동굴호텔 인피니티풀'],
+    cons: ['7월 최성수기 = 가격 최고', '인파 많음', '직항 없음 (경유 필수)'],
+    bestTime: '6~9월',
+    scores: { 1: {s:1,n:'1월 겨울 — 대부분 숙소/식당 폐쇄. 여행 불가'}, 3: {s:2,n:'3월 아직 쌀쌀, 일부 시설 미오픈'}, 7: {s:5,n:'7월 최고! 비 0%, 일몰 환상적'} },
+    tag: '7월 일몰 최적',
+    color: '#1565c0',
+  },
+  {
+    id: 'croatia', name: '크로아티아', country: '크로아티아', days: '7박 9일',
+    tier: 'premium',
+    flight: { low: 240, high: 340, note: '경유 14~18시간 (프랑크/이스탄불), 1인 120~170만' },
+    hotel: { low: 100, high: 200, note: '두브로브니크 4성급 1박 15~30만' },
+    expense: { low: 120, high: 200, note: '식비/페리/플리트비체 투어/흐바르섬' },
+    total: { low: 450, high: 700 },
+    pros: ['아드리아해 수영 가능', '두브로브니크 "아드리아해의 진주"', '플리트비체 호수 절경', '서유럽보다 물가 저렴'],
+    cons: ['직항 없음', '7월 관광객 많음', '두브로브니크 여름 매우 더움'],
+    bestTime: '6~9월',
+    scores: { 1: {s:1,n:'1월 겨울 — 추위, 해변 불가, 관광시설 축소'}, 3: {s:2,n:'3월 아직 춥고 바다 수영 불가'}, 7: {s:4,n:'7월 아드리아해 수영 가능, 날씨 완벽'} },
+    tag: '아드리아해',
+    color: '#c62828',
+  },
+  {
+    id: 'hawaii', name: '하와이', country: '미국', days: '5박 7일',
+    tier: 'premium',
+    flight: { low: 200, high: 400, note: '직항 9시간, 1인 100~200만' },
+    hotel: { low: 200, high: 400, note: '와이키키 4~5성급 1박 30~60만' },
+    expense: { low: 150, high: 300, note: '렌터카 10~15만/일, 팁 20%, 미국 물가' },
+    total: { low: 550, high: 1000 },
+    pros: ['직항 있음 (9h)', '자연+도시 균형', '스노클링/서핑/하이킹', '깨끗한 해변'],
+    cons: ['미국 물가 + 팁 문화 = 비쌈', '렌터카 필수', '와이키키 한국인 많음'],
+    bestTime: '4~10월 (건기)',
+    scores: { 1: {s:3,n:'1월 우기지만 따뜻(24℃). 고래관측 시즌!'}, 3: {s:4,n:'3월 우기 끝, 날씨 좋아짐. 비수기 가격'}, 7: {s:4,n:'7월 건기 쾌적. 직항 가능이 큰 장점'} },
+    tag: '직항+자연',
+    color: '#ff5722',
+  },
+  {
+    id: 'swiss', name: '스위스', country: '스위스', days: '6박 8일',
+    tier: 'premium',
+    flight: { low: 260, high: 360, note: '직항 대한항공 1인 130~180만, 경유 시 80~100만' },
+    hotel: { low: 170, high: 350, note: '중급호텔 1박 15~25만(CHF 120~200)' },
+    expense: { low: 150, high: 300, note: '스위스트래블패스+식비+액티비티, 물가 최고 수준' },
+    total: { low: 550, high: 900 },
+    pros: ['7월 알프스 최고 절경 (만년설+초록 초원)', '패러글라이딩/하이킹 최적기', '전 산악열차 운행'],
+    cons: ['유럽 중 최고 물가', '7월 성수기 = 최고가', '항공비 비쌈'],
+    bestTime: '6~9월 (7월 최적!)',
+    scores: { 1: {s:3,n:'1월 스키 시즌, 알프스 설경. 산악열차 일부 제한'}, 3: {s:3,n:'3월 스키 끝자락, 아직 쌀쌀. 비수기 가격'}, 7: {s:5,n:'7월 알프스 최고의 달! 모든 루트 오픈, 날씨 최상'} },
+    tag: '7월 알프스 최적',
+    color: '#f44336',
+  },
+];
+
+const VENUE_DATA = [
+  {
+    name: '아펠가모 반포', tier: '프리미엄', location: '서초구 반포',
+    access: '3호선 고속터미널역 도보 7분',
+    routeScore: 2,
+    routes: [
+      {from:'수진(우리)', time:'50분+', path:'분당선→수서→3호선→고터', hard:true},
+      {from:'청량리(신랑친가)', time:'40분', path:'1호선→종로3가→3호선→고터', hard:false},
+      {from:'백석(외가)', time:'35분', path:'3호선→고속터미널 직통!', hard:false},
+      {from:'인천', time:'1시간+', path:'1호선→종로→3호선', hard:true},
+      {from:'광주', time:'1시간+', path:'분당선→수서→3호선', hard:true},
+    ],
+    rental: { peak: 847, offpeak: 232, note: '성수기 피크 847만 / 비수기 232~440만' },
+    food: { price: '5.83~8.47', note: '비수기 5.83만/인, 성수기 8.47만/인 (VAT 포함)' },
+    total156: { peak: '약 2,168만', offpeak: '약 1,141만' },
+    foodScore: 4, foodReview: '뷔페 퀄리티 상급, 메뉴 다양. 디저트 특히 호평',
+    ambiScore: 5, ambiReview: '모던 럭셔리, 높은 층고, 자연광 풍부. 사진 잘 나옴',
+    guestScore: 4, guestReview: '고터역 접근 좋음, 주차 3시간, 대기공간 넓음',
+    parking: '지하주차장 (3시간 무료)', parkingCars: '약 200대',
+    subway: '3호선 고속터미널역 7분', waitArea: '넓은 로비+포토존',
+    mealTime: '80분 간격 분리예식', kidsZone: '없음',
+    pros: ['장식비 대관료 포함', '비수기 7월 = 가성비 우수', '사진 잘 나옴', '대기공간 쾌적'],
+    cons: ['성수기 가격 매우 높음', '보증인원 높음 (성수기 300명)', '키즈존 없음'],
+    review: '분위기는 최고급. 비수기 7월 예식이면 가격도 합리적. 식사 만족도 높은 편.',
+    color: '#9c27b0',
+  },
+  {
+    name: '웨딩시티 신도림', tier: '가성비', location: '구로구 신도림',
+    access: '1호선 신도림역 도보 5분 (지하 연결)',
+    routeScore: 3,
+    routes: [
+      {from:'수진(우리)', time:'50분', path:'분당선→서울역→1호선→신도림', hard:true},
+      {from:'청량리(신랑친가)', time:'35분', path:'1호선→신도림 직통!', hard:false},
+      {from:'인천', time:'40분', path:'1호선→신도림 직통!', hard:false},
+      {from:'구디/대림', time:'5~10분', path:'2호선 1~2정거장!', hard:false},
+      {from:'광주', time:'1시간+', path:'분당선→2호선→신도림', hard:true},
+    ],
+    rental: { peak: 500, offpeak: 250, note: '성수기 ~500만 / 비수기 ~250만' },
+    food: { price: '5.9~6.5', note: '토다이 운영 뷔페, 5.9만/인~' },
+    total156: { peak: '약 1,514만', offpeak: '약 1,170만' },
+    foodScore: 4, foodReview: '토다이 운영 뷔페로 가짓수 풍부. 회/초밥/고기 구성 좋음',
+    ambiScore: 3, ambiReview: '4개 홀 다양한 분위기. 테크노마트 내부라 건물은 아쉬움',
+    guestScore: 5, guestReview: '접근성+주차 최강. 지하철 직결, 2500대 주차',
+    parking: '2,500대 (3시간 무료)', parkingCars: '2,500대',
+    subway: '1호선 신도림역 5분 (지하연결)', waitArea: '넓은 로비',
+    mealTime: '80분 간격 분리예식', kidsZone: '테크노마트 내 편의시설',
+    pros: ['접근성+주차 최강', '식사 맛 좋음', '다양한 홀 선택', '가격 대비 구성 좋음'],
+    cons: ['최소보증 250명 (비선호 200명)', '상업시설 느낌'],
+    review: '접근성과 가성비의 왕. 식사 맛 좋고 주차 걱정 없음. 하객 편의 최고.',
+    color: '#4caf50',
+  },
+  {
+    name: '서울대연구공원 웨딩홀', tier: '가성비', location: '관악구 서울대',
+    access: '2호선 낙성대역 셔틀 / 차량 이동 권장',
+    routeScore: 2,
+    routes: [
+      {from:'수진(우리)', time:'1시간+', path:'분당선→2호선→낙성대+셔틀', hard:true},
+      {from:'청량리(신랑친가)', time:'45분', path:'1호선→시청→2호선→낙성대+셔틀', hard:true},
+      {from:'낙성대(지인)', time:'10분', path:'2호선 낙성대역+셔틀', hard:false},
+      {from:'인천', time:'1시간+', path:'환승 많음', hard:true},
+      {from:'광주', time:'1시간+', path:'분당선→2호선→낙성대', hard:true},
+    ],
+    rental: { peak: 340, offpeak: 200, note: '대관료 340만 (비수기 ~200만)' },
+    food: { price: '5.8', note: '뷔페 5.8만/인, 구성 깔끔' },
+    total156: { peak: '약 1,245만', offpeak: '약 1,105만' },
+    foodScore: 3, foodReview: '깔끔한 뷔페, 무난한 맛. 가격 대비 만족',
+    ambiScore: 4, ambiReview: '샹들리에 고급, 계단식 좌석. 150석 아담',
+    guestScore: 2, guestReview: '대중교통 불편, 셔틀 필수. 주차는 무료',
+    parking: '교내 주차 (무료)', parkingCars: '여유',
+    subway: '2호선 낙성대역 (셔틀 필요)', waitArea: '보통',
+    mealTime: '예식 간격 1시간30분 (식사 촉박)', kidsZone: '없음',
+    pros: ['가격 최저', '150석 아담', '주차 무료', '계단식 좌석 시야 좋음'],
+    cons: ['서울대 관계자 우선', '접근성 불편', '식사 시간 촉박', '키즈존 없음'],
+    review: '가격 최저. 아담하고 고급스러움. 대중교통 접근 아쉽고 식사 시간 여유 없음.',
+    color: '#2196f3',
+  },
+  {
+    name: '오펠리스 (서소문)', tier: '중급', location: '중구 서소문',
+    access: '서울역 도보 10분, 5호선 서대문역 5분',
+    routeScore: 3,
+    routes: [
+      {from:'수진(우리)', time:'50분', path:'분당선→서울역(직통 가능)', hard:false},
+      {from:'청량리(신랑친가)', time:'20분', path:'1호선→서울역 직통!', hard:false},
+      {from:'용산(지인)', time:'5분', path:'1호선 1정거장!', hard:false},
+      {from:'인천', time:'50분', path:'1호선→서울역 직통!', hard:false},
+      {from:'광주', time:'1시간', path:'분당선→왕십리→서울역', hard:true},
+    ],
+    rental: { peak: 500, offpeak: 300, note: '성수기 ~500만 / 비수기 ~300만' },
+    food: { price: '6.5~7.5', note: '뷔페 6.5만/인~ (음식 퀄리티 호평)' },
+    total156: { peak: '약 1,670만', offpeak: '약 1,314만' },
+    foodScore: 5, foodReview: '음식 맛 최상급. 간 깔끔, 어른/젊은 하객 모두 만족',
+    ambiScore: 4, ambiReview: '클래식 모던 분위기, 층고 높음. 포토존 좋음',
+    guestScore: 4, guestReview: '서울역 근처 = 지방하객 최적. 주차 3시간 무료',
+    parking: '3시간 무료', parkingCars: '약 150대',
+    subway: '서울역 10분 / 5호선 서대문역 5분', waitArea: '넓은 로비+카페',
+    mealTime: '분리예식 80분', kidsZone: '없음',
+    pros: ['서울역 = 지방하객 최적', '식사 만족도 최고', '클래식한 분위기'],
+    cons: ['성수기 가격 높음', '인기 많아 예약 빠름'],
+    review: '식사 맛 최고 수준. 서울역 근처라 지방 하객 편의 좋음.',
+    color: '#ff9800',
+  },
+  {
+    name: 'DMC타워웨딩 (상암)', tier: '중급', location: '마포구 상암',
+    access: '6호선 DMC역 도보 5분 (공항철도 연결)',
+    routeScore: 2,
+    routes: [
+      {from:'수진(우리)', time:'1시간+', path:'분당선→6호선 환승 복잡', hard:true},
+      {from:'청량리(신랑친가)', time:'40분', path:'경의중앙선→DMC역', hard:false},
+      {from:'인천', time:'50분', path:'공항철도→DMC', hard:false},
+      {from:'용산(지인)', time:'30분', path:'경의중앙선→DMC', hard:false},
+      {from:'광주', time:'1시간+', path:'환승 많음', hard:true},
+    ],
+    rental: { peak: 450, offpeak: 250, note: '성수기 ~450만 / 비수기 ~250만' },
+    food: { price: '6.0~7.0', note: '뷔페 6만/인~' },
+    total156: { peak: '약 1,542만', offpeak: '약 1,186만' },
+    foodScore: 3, foodReview: '무난한 뷔페. 특별하진 않지만 불만도 없음',
+    ambiScore: 3, ambiReview: '깔끔한 모던. 한강뷰 가능 (일부 홀)',
+    guestScore: 4, guestReview: '3노선 역세권. 공항철도 연결로 해외하객도 편리',
+    parking: '2시간 무료', parkingCars: '건물 내',
+    subway: '6호선+경의중앙선+공항철도 DMC역', waitArea: '보통',
+    mealTime: '분리예식', kidsZone: '없음',
+    pros: ['3노선 역세권', '공항 접근 좋음', '한강뷰', '합리적 가격'],
+    cons: ['주차 2시간만 무료', '식사 무난'],
+    review: '교통 편의 좋고 가격 합리적. 식사는 무난.',
+    color: '#607d8b',
+  },
+  {
+    name: '더링크호텔 (신도림)', tier: '호텔', location: '구로구 신도림',
+    access: '1호선 신도림역 도보 3분',
+    routeScore: 3,
+    routes: [
+      {from:'수진(우리)', time:'50분', path:'분당선→서울역→1호선→신도림', hard:true},
+      {from:'청량리(신랑친가)', time:'35분', path:'1호선→신도림 직통!', hard:false},
+      {from:'인천', time:'40분', path:'1호선→신도림 직통!', hard:false},
+      {from:'구디/대림', time:'5~10분', path:'2호선 1~2정거장!', hard:false},
+      {from:'광주', time:'1시간+', path:'분당선→2호선→신도림', hard:true},
+    ],
+    rental: { peak: 0, offpeak: 0, note: '대관료 없음 (식대에 포함)' },
+    food: { price: '11~15', note: '호텔뷔페 11~15만/인, 회·초밥·와인 무제한' },
+    total156: { peak: '약 2,340만', offpeak: '약 1,716만' },
+    foodScore: 5, foodReview: '호텔급 최고. 회/초밥/고기/디저트/와인 무제한. 하객 감동',
+    ambiScore: 5, ambiReview: '호텔 웨딩 고급스러움. 로비/포토존 완벽',
+    guestScore: 5, guestReview: '초역세권+호텔 주차+식사 감동. 하객 만족도 1위',
+    parking: '호텔 주차장 (3시간 무료)', parkingCars: '호텔 내',
+    subway: '1호선 신도림역 3분', waitArea: '호텔 로비 (매우 쾌적)',
+    mealTime: '여유로운 식사 시간', kidsZone: '없음',
+    pros: ['대관료 0원', '식사 퀄리티 최상', '호텔 고급스러움', '초역세권'],
+    cons: ['식대 비쌈 = 총비용 높음', '인기 많아 날짜 없음'],
+    review: '하객 식사 만족도 최우선이면 최고의 선택. 비용 여유 필요.',
+    color: '#880e4f',
+  },
+  {
+    name: '디노체컨벤션 (왕십리)', tier: '중급', location: '성동구 왕십리',
+    access: '2호선 왕십리역 12번출구 도보 1분',
+    routeScore: 5,
+    routes: [
+      {from:'수진(우리)', time:'35분', path:'분당선→왕십리 직통!', hard:false},
+      {from:'태평(친가)', time:'40분', path:'8호선→모란→분당선→왕십리', hard:false},
+      {from:'청량리(신랑친가)', time:'5분', path:'경의중앙선/분당선 1정거장!', hard:false},
+      {from:'약수(지인)', time:'10분', path:'6호선→왕십리 2정거장', hard:false},
+      {from:'외대(지인)', time:'10분', path:'1호선→청량리→경의중앙선→왕십리', hard:false},
+      {from:'용산(지인)', time:'15분', path:'경의중앙선→왕십리 직통!', hard:false},
+      {from:'인천', time:'55분', path:'1호선→왕십리', hard:false},
+      {from:'광주', time:'50분', path:'경강선→분당선→왕십리 직통!', hard:false},
+      {from:'신흥(지인)', time:'40분', path:'8호선→모란→분당선→왕십리', hard:false},
+      {from:'백석(외가)', time:'50분', path:'3호선→종로3가→5호선→왕십리', hard:false},
+    ],
+    rental: { peak: 700, offpeak: 400, note: '대관료 700만~ (생화 꽃장식 포함)' },
+    food: { price: '7.0~', note: '한식뷔페 7만/인~ (25년 뷔페 변경, 만족도 상승)' },
+    total156: { peak: '약 1,792만', offpeak: '약 1,492만' },
+    foodScore: 4, foodReview: '25년 뷔페 전환 후 만족도 상승. 한식 기반 구성 좋음',
+    ambiScore: 5, ambiReview: '10m 천고+샹들리에, 어두운 톤 웅장함. 단독홀',
+    guestScore: 5, guestReview: '왕십리역 1분! 2호선+5호선+분당선+경의중앙선. 접근 최강',
+    parking: '민자역사 주차장 (3시간 무료)', parkingCars: '대형',
+    subway: '2호선+5호선+분당선+경의중앙선 왕십리역 1분', waitArea: '로비+별도 대기공간',
+    mealTime: '분리예식', kidsZone: '역사 내 편의시설',
+    pros: ['왕십리역 도보 1분 (4노선!)', '10m 천고 웅장함', '단독홀', '꽃장식 포함'],
+    cons: ['대관료 높은 편', '총비용 중상', '민자역사 건물'],
+    review: '왕십리 4노선 초역세권 + 10m 천고 웅장한 단독홀. 접근성 최강. 가격은 중상.',
+    color: '#d32f2f',
+  },
+  {
+    name: '보테가마지오 (서울숲)', tier: '프리미엄', location: '성동구 서울숲 (왕십리 인근)',
+    access: '분당선 서울숲역 도보 3분 / 2호선 왕십리역 차량 5분',
+    routeScore: 4,
+    routes: [
+      {from:'수진(우리)', time:'40분', path:'분당선→서울숲 직통!', hard:false},
+      {from:'태평(친가)', time:'45분', path:'8호선→모란→분당선→서울숲', hard:false},
+      {from:'청량리(신랑친가)', time:'10분', path:'분당선→서울숲 2정거장', hard:false},
+      {from:'광주', time:'55분', path:'경강선→분당선→서울숲 직통!', hard:false},
+      {from:'인천', time:'1시간', path:'1호선→왕십리→분당선 1정거장', hard:true},
+      {from:'용산(지인)', time:'20분', path:'경의중앙선→왕십리→분당선 1정거장', hard:false},
+    ],
+    rental: { peak: 800, offpeak: 500, note: '대관료 별도 문의 (추정 500~800만)' },
+    food: { price: '8.0~9.9', note: '뷔페/코스 8~9.9만/인. 밥맛 좋기로 유명' },
+    total156: { peak: '약 2,344만', offpeak: '약 1,748만' },
+    foodScore: 5, foodReview: '밥맛 좋기로 소문난 곳. 뷔페 구성 풍부, 하객 만족도 높음',
+    ambiScore: 5, ambiReview: '14m 천고, 갤러리아포레 내 고급스러움. 서울숲 뷰',
+    guestScore: 4, guestReview: '서울숲역 3분, 주차 여유. 대기공간 넓고 쾌적',
+    parking: '갤러리아포레 지하주차장 (여유)', parkingCars: '대형',
+    subway: '분당선 서울숲역 3분', waitArea: '갤러리아포레 로비 (넓음)',
+    mealTime: '분리예식 80분', kidsZone: '없음',
+    pros: ['14m 천고 웅장', '식사 맛 최고 수준', '서울숲 인근 분위기', '주차 여유'],
+    cons: ['가격 높음', '왕십리역에서 한 정거장', '보증인원 300명+'],
+    review: '서울숲 옆 14m 천고 웅장함 + 밥맛 최고. 가격 여유 있으면 왕십리 근처 최고 선택.',
+    color: '#1b5e20',
+  },
+];
+
+// ========== STATE (localStorage 자동 저장) ==========
+const savedState = JSON.parse(localStorage.getItem('weddingState') || '{}');
+let state = {
+  weddingMonth: savedState.weddingMonth || '2028-03',
+  budgetTier: savedState.budgetTier || 'standard',
+  currentSaved: savedState.currentSaved || 0,
+  honeymoon: savedState.honeymoon || 'cotakinabalu',
+  checkedItems: JSON.parse(localStorage.getItem('weddingChecklist') || '{}'),
+};
+function saveState() {
+  localStorage.setItem('weddingState', JSON.stringify({
+    weddingMonth: state.weddingMonth,
+    budgetTier: state.budgetTier,
+    currentSaved: state.currentSaved,
+    honeymoon: state.honeymoon,
+  }));
+}
+
+// ========== HELPERS ==========
+function fmt(n) { return n.toLocaleString(); }
+
+function getTotalBudget(tier) {
+  return BUDGET_ITEMS.reduce((s, i) => s + i[tier], 0);
+}
+
+function getMonthsDiff(from, to) {
+  const [fy, fm] = from.split('-').map(Number);
+  const [ty, tm] = to.split('-').map(Number);
+  return (ty - fy) * 12 + (tm - fm);
+}
+
+function getDday() {
+  const [y, m] = state.weddingMonth.split('-').map(Number);
+  const wedding = new Date(y, m - 1, 15);
+  const today = new Date();
+  return Math.ceil((wedding - today) / (1000 * 60 * 60 * 24));
+}
+
+// ========== RENDER FUNCTIONS ==========
+function renderDashboard() {
+  const total = getTotalBudget(state.budgetTier);
+  const months = getMonthsDiff('2026-04', state.weddingMonth);
+  // 하객 리스트에서 실시간 축의금 계산
+  const guestList = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+  const estimatedChukuigeum = guestList.length > 0 ? guestList.reduce((s, g) => s + (g.chukui || 0), 0) : FALLBACK_CHUKUIGEUM;
+  const guestTotal = guestList.length > 0 ? guestList.reduce((s, g) => s + 1 + (g.companion || 0), 0) : GUEST_COUNT;
+  const actualNeeded = total - estimatedChukuigeum;
+
+  // 실제 저축 가능액 계산
+  let totalSaveable = 0;
+  let bonusCount = 0;
+  for (let i = 0; i < months; i++) {
+    let m = ((3 + i) % 12) + 1;
+    totalSaveable += MONTHLY_SAVINGS;
+    if (BONUS_MONTHS.includes(m)) { totalSaveable += BONUS_AMOUNT; bonusCount++; }
+  }
+  const feasibility = totalSaveable >= actualNeeded;
+  const dday = getDday();
+
+  // D-day
+  document.getElementById('ddayNumber').textContent = dday > 0 ? `D-${dday}` : dday === 0 ? 'D-Day!' : `D+${Math.abs(dday)}`;
+  const [wy, wm] = state.weddingMonth.split('-');
+  document.getElementById('ddayDate').textContent = `${wy}년 ${parseInt(wm)}월 예정`;
+
+  // Summary cards
+  const grid = document.getElementById('summaryGrid');
+  grid.innerHTML = `
+    <div class="summary-card highlight">
+      <div class="label">총 예상 비용</div>
+      <div class="value">${fmt(total)}만</div>
+      <div class="sub">${state.budgetTier === 'economy' ? '절약형' : state.budgetTier === 'standard' ? '표준형' : '프리미엄'}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">축의금 예상 수입</div>
+      <div class="value" style="color:var(--success)">${fmt(estimatedChukuigeum)}만</div>
+      <div class="sub">하객 ${guestTotal}명 기준</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">실질 필요 금액</div>
+      <div class="value">${fmt(actualNeeded)}만</div>
+      <div class="sub">총비용 - 축의금 (사전 준비 필요)</div>
+    </div>
+    <div class="summary-card highlight">
+      <div class="label">둘이 합산 월 저축</div>
+      <div class="value">${fmt(MONTHLY_SAVINGS)}만</div>
+      <div class="sub">미소 ${MISO.spare}만 + 우석 ${WOOSEOK.spare}만</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">${months}개월간 총 저축 가능</div>
+      <div class="value">${fmt(totalSaveable)}만</div>
+      <div class="sub">월 저축 + 성과급 ${bonusCount}회</div>
+    </div>
+    <div class="summary-card" style="border-color:${feasibility ? 'var(--success)' : 'var(--danger)'}">
+      <div class="label">달성 가능 여부</div>
+      <div class="value" style="color:${feasibility ? 'var(--success)' : 'var(--danger)'}">${feasibility ? 'OK' : '부족'}</div>
+      <div class="sub">${feasibility ? '여유 ' + fmt(totalSaveable - actualNeeded) + '만' : '부족 ' + fmt(actualNeeded - totalSaveable) + '만'}</div>
+    </div>
+  `;
+
+  // Progress
+  updateProgress();
+
+  // Bar chart
+  renderBarChart(MONTHLY_SAVINGS, months, total);
+}
+
+function renderBarChart(monthlyTarget, totalMonths, totalBudget) {
+  const chart = document.getElementById('barChart');
+  chart.innerHTML = '';
+  const startYear = 2026, startMonth = 4;
+  const maxVal = monthlyTarget * 1.8;
+
+  for (let i = 0; i < totalMonths; i++) {
+    let m = ((startMonth - 1 + i) % 12) + 1;
+    let y = startYear + Math.floor((startMonth - 1 + i) / 12);
+    let amount = monthlyTarget;
+    if (BONUS_MONTHS.includes(m)) amount = monthlyTarget + BONUS_AMOUNT; // 성과급월
+    let h = Math.min((amount / maxVal) * 100, 100);
+    let label = `${y.toString().slice(2)}.${String(m).padStart(2, '0')}`;
+
+    let group = document.createElement('div');
+    group.className = 'bar-group';
+    group.innerHTML = `
+      <div class="bar-value">${amount}</div>
+      <div class="bar" style="height:${h}%;${BONUS_MONTHS.includes(m)?'background:linear-gradient(to top,#2e7d32,#66bb6a);':''}"></div>
+      <div class="bar-label">${label}</div>
+    `;
+    chart.appendChild(group);
+  }
+}
+
+function updateProgress() {
+  const saved = parseInt(document.getElementById('currentSaved').value) || 0;
+  state.currentSaved = saved;
+  saveState();
+  const total = getTotalBudget(state.budgetTier);
+  const pct = Math.min(Math.round((saved / total) * 100), 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressSaved').textContent = `저축액: ${fmt(saved)}만원`;
+  document.getElementById('progressPercent').textContent = pct + '%';
+}
+
+function renderBudget() {
+  const body = document.getElementById('budgetBody');
+  body.innerHTML = BUDGET_ITEMS.map(item => `
+    <tr>
+      <td><strong>${item.name}</strong></td>
+      <td class="note">${item.detail}</td>
+      <td class="amount">${item.economy ? fmt(item.economy) + '만' : '-'}</td>
+      <td class="amount">${item.standard ? fmt(item.standard) + '만' : '-'}</td>
+      <td class="amount">${item.premium ? fmt(item.premium) + '만' : '-'}</td>
+    </tr>
+  `).join('');
+
+  const foot = document.getElementById('budgetFoot');
+  foot.innerHTML = `<tr>
+    <td colspan="2"><strong>합계</strong></td>
+    <td class="amount">${fmt(getTotalBudget('economy'))}만</td>
+    <td class="amount">${fmt(getTotalBudget('standard'))}만</td>
+    <td class="amount">${fmt(getTotalBudget('premium'))}만</td>
+  </tr>`;
+
+  // Share simulator
+  const slider = document.getElementById('groomShare');
+  const update = () => {
+    const pct = parseInt(slider.value);
+    const total = getTotalBudget(state.budgetTier);
+    document.getElementById('groomShareVal').textContent = pct + '%';
+    document.getElementById('groomAmount').textContent = fmt(Math.round(total * pct / 100)) + '만';
+    document.getElementById('brideAmount').textContent = fmt(Math.round(total * (100 - pct) / 100)) + '만';
+  };
+  slider.oninput = update;
+  update();
+}
+
+function renderSavings() {
+  const total = getTotalBudget(state.budgetTier);
+  const months = getMonthsDiff('2026-04', state.weddingMonth);
+  const monthlyBase = MONTHLY_SAVINGS; // 85만원 (미소 45 + 우석 40)
+  const bonusExtra = BONUS_AMOUNT; // 미소 성과급 100만
+
+  // Spending schedule
+  const spendingMap = {};
+  const [wy, wm] = state.weddingMonth.split('-').map(Number);
+
+  // Key spending months (adjust based on wedding month)
+  spendingMap['2026-08'] = { item: '웨딩홀 계약금', amount: Math.round(total * 0.03) };
+  spendingMap['2026-11'] = { item: '드메+제주스냅 계약금', amount: Math.round(total * 0.03) };
+  spendingMap['2027-02'] = { item: '예물 구매', amount: Math.round(BUDGET_ITEMS.find(i=>i.name.includes('예물 (반지)'))[state.budgetTier]) };
+  spendingMap['2027-03'] = { item: '예단', amount: Math.round(BUDGET_ITEMS.find(i=>i.name.includes('예단'))[state.budgetTier]) };
+  spendingMap['2027-05'] = { item: '제주 스냅촬영 (항공+숙박+촬영)', amount: Math.round(BUDGET_ITEMS.find(i=>i.name.includes('제주도'))[state.budgetTier]) };
+  spendingMap['2027-11'] = { item: '신혼여행 예약금', amount: Math.round(BUDGET_ITEMS.find(i=>i.name.includes('신혼여행'))[state.budgetTier] * 0.3) };
+
+  const wKey1 = `${wy}-${String(wm-1).padStart(2,'0')}`;
+  spendingMap[wKey1] = { item: '잔금 정산 (웨딩홀+스드메)', amount: Math.round(total * 0.15) };
+  const wKey2 = `${wy}-${String(wm).padStart(2,'0')}`;
+  spendingMap[wKey2] = { item: '결혼식 당일 + 기타', amount: Math.round(total * 0.05) };
+
+  const body = document.getElementById('savingsBody');
+  body.innerHTML = '';
+  let cumulative = 0;
+
+  for (let i = 0; i < months + 1; i++) {
+    let m = ((3 + i) % 12) + 1; // starts from April (month 4)
+    let y = 2026 + Math.floor((3 + i) / 12);
+    let key = `${y}-${String(m).padStart(2, '0')}`;
+    let label = `${y}.${String(m).padStart(2, '0')}`;
+
+    let saving = monthlyBase;
+    let bonus = 0;
+    if (BONUS_MONTHS.includes(m)) bonus = bonusExtra;
+
+    let spending = spendingMap[key] || null;
+    cumulative += saving + bonus;
+
+    let isSpending = !!spending;
+    let isHighlight = BONUS_MONTHS.includes(m);
+
+    body.innerHTML += `
+      <tr class="${isSpending ? 'spending-month' : ''} ${isHighlight ? 'highlight-row' : ''}">
+        <td>${label}</td>
+        <td>${fmt(saving)}만</td>
+        <td>${bonus ? '+' + fmt(bonus) + '만' : '-'}</td>
+        <td>${spending ? spending.item : '-'}</td>
+        <td style="color:${isSpending ? 'var(--danger)' : 'inherit'}">${spending ? '-' + fmt(spending.amount) + '만' : '-'}</td>
+        <td><strong>${fmt(cumulative)}만</strong></td>
+      </tr>
+    `;
+  }
+}
+
+function renderTimeline() {
+  const container = document.getElementById('timeline');
+  container.innerHTML = TIMELINE_DATA.map((item, i) => `
+    <div class="timeline-item ${i < 2 ? 'current' : ''}">
+      <div class="timeline-date">${item.date}</div>
+      <div class="timeline-title">${item.title}</div>
+      <div class="timeline-desc">${item.desc}</div>
+      ${item.cost ? `<span class="timeline-cost">${item.cost}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderChecklist() {
+  const container = document.getElementById('checklistContainer');
+  container.innerHTML = '';
+  let totalItems = 0, checkedCount = 0;
+
+  Object.entries(CHECKLIST_DATA).forEach(([group, items]) => {
+    let html = `<div class="checklist-group"><h3>${group}</h3>`;
+    items.forEach((item, idx) => {
+      const key = `${group}-${idx}`;
+      const checked = state.checkedItems[key] || false;
+      totalItems++;
+      if (checked) checkedCount++;
+      html += `
+        <div class="checklist-item">
+          <input type="checkbox" id="chk-${key}" ${checked ? 'checked' : ''} onchange="toggleCheck('${key}')">
+          <label for="chk-${key}" class="${checked ? 'checked' : ''}">${item.text}</label>
+          <span class="due">${item.due}</span>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML += html;
+  });
+
+  const pct = totalItems > 0 ? Math.round((checkedCount / totalItems) * 100) : 0;
+  document.getElementById('checkProgress').style.width = pct + '%';
+  document.getElementById('checkCount').textContent = `${checkedCount} / ${totalItems} 완료`;
+  document.getElementById('checkPercent').textContent = pct + '%';
+}
+
+function toggleCheck(key) {
+  state.checkedItems[key] = !state.checkedItems[key];
+  localStorage.setItem('weddingChecklist', JSON.stringify(state.checkedItems));
+  renderChecklist();
+}
+
+function renderCards() {
+  const grid = document.getElementById('ccGrid');
+  grid.innerHTML = CREDIT_CARDS.map(card => `
+    <div class="cc-card ${card.recommended ? 'recommended' : ''}">
+      <div class="cc-name">${card.name}</div>
+      <div class="cc-issuer">${card.issuer}</div>
+      <ul class="cc-features">
+        ${card.features.map(function(f){return '<li>'+f+'</li>';}).join('')}
+      </ul>
+      <div class="cc-annual">${card.annual}</div>
+    </div>
+  `).join('');
+
+  // Card timeline
+  const ct = document.getElementById('cardTimeline');
+  ct.innerHTML = CARD_TIMELINE.map(item => `
+    <div class="timeline-item">
+      <div class="timeline-date">${item.date}</div>
+      <div class="timeline-title">${item.title}</div>
+      <div class="timeline-desc">${item.desc}</div>
+      ${item.cost ? `<span class="timeline-cost">${item.cost}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderTips() {
+  const container = document.getElementById('tipsContainer');
+  container.innerHTML = TIPS.map(tip => `
+    <div class="tip-box ${tip.type === 'warning' ? 'warning' : ''}">
+      <strong>${tip.title}</strong>
+      ${tip.body}
+    </div>
+  `).join('');
+}
+
+// ========== NAVIGATION ==========
+document.querySelectorAll('.nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('sec-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ========== EVENT LISTENERS ==========
+document.getElementById('weddingMonth').addEventListener('change', (e) => {
+  state.weddingMonth = e.target.value;
+  saveState();
+  renderAll();
+});
+document.getElementById('budgetTier').addEventListener('change', (e) => {
+  state.budgetTier = e.target.value;
+  saveState();
+  renderAll();
+});
+
+// 저장된 설정값 UI에 반영
+document.getElementById('weddingMonth').value = state.weddingMonth;
+document.getElementById('budgetTier').value = state.budgetTier;
+document.getElementById('currentSaved').value = state.currentSaved;
+
+// ========== GUEST LIST ==========
+let guests = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+let currentGuestTab = 'groom';
+
+function switchGuestTab(side) {
+  currentGuestTab = side;
+  // 탭 스타일
+  document.getElementById('guestTabGroom').style.borderBottomColor = side === 'groom' ? 'var(--primary)' : 'transparent';
+  document.getElementById('guestTabGroom').style.color = side === 'groom' ? 'var(--primary)' : 'var(--text-light)';
+  document.getElementById('guestTabGroom').style.fontWeight = side === 'groom' ? '700' : '500';
+  document.getElementById('guestTabBride').style.borderBottomColor = side === 'bride' ? 'var(--primary)' : 'transparent';
+  document.getElementById('guestTabBride').style.color = side === 'bride' ? 'var(--primary)' : 'var(--text-light)';
+  document.getElementById('guestTabBride').style.fontWeight = side === 'bride' ? '700' : '500';
+  // 카드 하이라이트
+  document.getElementById('groomSummaryCard').style.borderColor = side === 'groom' ? 'var(--primary)' : 'var(--border)';
+  document.getElementById('brideSummaryCard').style.borderColor = side === 'bride' ? 'var(--primary)' : 'var(--border)';
+  // 패널 전환
+  document.getElementById('groomGuestPanel').style.display = side === 'groom' ? 'block' : 'none';
+  document.getElementById('brideGuestPanel').style.display = side === 'bride' ? 'block' : 'none';
+}
+
+function addGuest() {
+  const name = document.getElementById('guestName').value.trim();
+  if (!name) return;
+  guests.push({
+    id: Date.now(),
+    name,
+    side: currentGuestTab,
+    relation: document.getElementById('guestRelation').value,
+    chukui: parseInt(document.getElementById('guestChukui').value) || 15,
+    companion: parseInt(document.getElementById('guestCompanion').value) || 0,
+  });
+  localStorage.setItem('weddingGuests', JSON.stringify(guests));
+  document.getElementById('guestName').value = '';
+  renderGuests();
+}
+
+function removeGuest(id) {
+  guests = guests.filter(g => g.id !== id);
+  localStorage.setItem('weddingGuests', JSON.stringify(guests));
+  renderGuests();
+}
+
+function editGuest(id, field, value) {
+  const guest = guests.find(g => g.id === id);
+  if (guest) {
+    guest[field] = value;
+    localStorage.setItem('weddingGuests', JSON.stringify(guests));
+    renderGuests();
+  }
+}
+
+function renderGuestTable(side) {
+  const relFilter = document.getElementById('guestRelFilter').value;
+  let filtered = guests.filter(g => g.side === side);
+  if (relFilter !== 'all') filtered = filtered.filter(g => g.relation === relFilter);
+
+  const bodyId = side === 'groom' ? 'groomGuestBody' : 'brideGuestBody';
+  const emptyId = side === 'groom' ? 'groomGuestEmpty' : 'brideGuestEmpty';
+  const body = document.getElementById(bodyId);
+  const rels = ['가족','친척','친구','직장','학교','기타'];
+
+  body.innerHTML = filtered.map(g => `
+    <tr>
+      <td><input type="text" value="${g.name}" onchange="editGuest(${g.id},'name',this.value)" style="border:1px solid var(--border);border-radius:4px;padding:2px 6px;width:90px;font-weight:600;"></td>
+      <td><select onchange="editGuest(${g.id},'relation',this.value)" style="border:1px solid var(--border);border-radius:4px;padding:2px;">
+        ${rels.map(function(r){return '<option '+(g.relation===r?'selected':'')+'>'+r+'</option>';}).join('')}
+      </select></td>
+      <td><input type="number" value="${g.chukui}" onchange="editGuest(${g.id},'chukui',+this.value)" style="border:1px solid var(--border);border-radius:4px;padding:2px 4px;width:55px;text-align:right;" min="0">만</td>
+      <td><input type="number" value="${g.companion}" onchange="editGuest(${g.id},'companion',+this.value)" style="border:1px solid var(--border);border-radius:4px;padding:2px 4px;width:45px;text-align:right;" min="0">명</td>
+      <td class="amount">${1 + g.companion}명</td>
+      <td><button onclick="removeGuest(${g.id})" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.1rem;">✕</button></td>
+    </tr>
+  `).join('');
+
+  document.getElementById(emptyId).style.display = filtered.length ? 'none' : 'block';
+}
+
+function renderGuests() {
+  renderGuestTable('groom');
+  renderGuestTable('bride');
+
+  // Stats
+  const groomList = guests.filter(g => g.side === 'groom');
+  const brideList = guests.filter(g => g.side === 'bride');
+  const groomTotal = groomList.reduce((s, g) => s + 1 + g.companion, 0);
+  const brideTotal = brideList.reduce((s, g) => s + 1 + g.companion, 0);
+  const groomChukuiSum = groomList.reduce((s, g) => s + g.chukui, 0);
+  const brideChukuiSum = brideList.reduce((s, g) => s + g.chukui, 0);
+  const totalPeople = groomTotal + brideTotal;
+  const totalChukui = groomChukuiSum + brideChukuiSum;
+
+  document.getElementById('groomGuestCount').textContent = groomTotal + '명';
+  document.getElementById('brideGuestCount').textContent = brideTotal + '명';
+  document.getElementById('groomChukui').textContent = '축의금 ' + fmt(groomChukuiSum) + '만';
+  document.getElementById('brideChukui').textContent = '축의금 ' + fmt(brideChukuiSum) + '만';
+  document.getElementById('totalGuestCount').textContent = totalPeople + '명';
+  document.getElementById('estChukui').textContent = fmt(totalChukui) + '만';
+}
+
+// Enter key support for guest input
+document.getElementById('guestName').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') addGuest();
+});
+
+// ========== VENUE ==========
+function renderVenue() {
+  const stars = (n) => { let s=''; for(let i=0;i<5;i++) s+=i<n?'\u2605':'\u2606'; return s; };
+  const container = document.getElementById('venueCards');
+  // Sort by routeScore (우리 접근성 우선), then cheapest
+  const sorted = [...VENUE_DATA].sort((a,b) => {
+    if (b.routeScore !== a.routeScore) return b.routeScore - a.routeScore;
+    const aVal = parseInt(a.total156.offpeak.replace(/[^0-9]/g,'').slice(-4));
+    const bVal = parseInt(b.total156.offpeak.replace(/[^0-9]/g,'').slice(-4));
+    return aVal - bVal;
+  });
+
+  container.innerHTML = sorted.map(v => `
+    <div class="venue-card" style="border-color:${v.color}33">
+      <div class="venue-header">
+        <h3>${v.name}</h3>
+        <span style="font-size:0.7rem;color:${v.routeScore>=4?'var(--success)':'var(--text-light)'};font-weight:700;">우리접근 ${stars(v.routeScore)}</span>
+        <span class="venue-tier" style="background:${v.color}">${v.tier}</span>
+      </div>
+      <div class="venue-info">
+        ${v.location} | ${v.access} | 주차: ${v.parking}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.5rem;margin:0.8rem 0;">
+        <div class="hm-cost-item">
+          <div class="cost-label">대관료</div>
+          <div class="cost-value" style="font-size:0.85rem">${v.rental.note}</div>
+        </div>
+        <div class="hm-cost-item">
+          <div class="cost-label">식대 (1인)</div>
+          <div class="cost-value" style="font-size:0.85rem">${v.food.price}만원</div>
+          <div class="cost-note">${v.food.note}</div>
+        </div>
+        <div class="hm-cost-item" style="background:var(--primary-bg)">
+          <div class="cost-label">156명 총비용 (비수기)</div>
+          <div class="cost-value" style="font-size:0.85rem">${v.total156.offpeak}</div>
+        </div>
+        <div class="hm-cost-item">
+          <div class="cost-label">156명 총비용 (성수기)</div>
+          <div class="cost-value" style="font-size:0.85rem">${v.total156.peak}</div>
+        </div>
+      </div>
+      <div style="margin:0.8rem 0;font-size:0.83rem;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;margin-bottom:0.5rem;">
+          <div style="background:#f5f5f5;padding:0.4rem;border-radius:6px;text-align:center;">
+            <div style="color:var(--text-light);font-size:0.7rem;">식사 맛</div>
+            <div style="color:var(--primary);font-weight:700;">${stars(v.foodScore)}</div>
+          </div>
+          <div style="background:#f5f5f5;padding:0.4rem;border-radius:6px;text-align:center;">
+            <div style="color:var(--text-light);font-size:0.7rem;">분위기</div>
+            <div style="color:var(--primary);font-weight:700;">${stars(v.ambiScore)}</div>
+          </div>
+          <div style="background:#f5f5f5;padding:0.4rem;border-radius:6px;text-align:center;">
+            <div style="color:var(--text-light);font-size:0.7rem;">하객 편의</div>
+            <div style="color:var(--primary);font-weight:700;">${stars(v.guestScore)}</div>
+          </div>
+        </div>
+        <div style="font-size:0.78rem;color:var(--text-light);line-height:1.5;">
+          <span style="color:var(--accent);">식사:</span> ${v.foodReview}<br>
+          <span style="color:var(--accent);">분위기:</span> ${v.ambiReview}<br>
+          <span style="color:var(--accent);">하객편의:</span> ${v.guestReview}
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.3rem;margin:0.5rem 0;font-size:0.78rem;color:var(--text-light);">
+        <div>지하철: ${v.subway}</div>
+        <div>주차: ${v.parkingCars}</div>
+        <div>대기공간: ${v.waitArea}</div>
+        <div>식사간격: ${v.mealTime}</div>
+      </div>
+      <div class="hm-lists" style="margin:0.5rem 0">
+        <div class="hm-list pros">
+          <h4 style="color:var(--success)">장점</h4>
+          <ul>${v.pros.map(function(p){return '<li>'+p+'</li>';}).join('')}</ul>
+        </div>
+        <div class="hm-list cons">
+          <h4 style="color:var(--danger)">단점</h4>
+          <ul>${v.cons.map(function(c){return '<li>'+c+'</li>';}).join('')}</ul>
+        </div>
+      </div>
+      ${v.routes ? '<div style="margin:0.6rem 0;"><div style="font-size:0.8rem;font-weight:700;color:var(--accent);margin-bottom:0.3rem;">우리 가족/지인 접근성</div><div style="display:flex;flex-wrap:wrap;gap:0.3rem;">' + v.routes.map(function(r){return '<span style="font-size:0.72rem;padding:2px 8px;border-radius:12px;background:'+(r.hard?'#ffebee':'#e8f5e9')+';color:'+(r.hard?'var(--danger)':'var(--success)')+';">'+r.from+' '+r.time+' ('+r.path+')</span>';}).join('') + '</div></div>' : ''}
+      <div class="venue-review">"${v.review}"</div>
+    </div>
+  `).join('');
+}
+
+// ========== HONEYMOON ==========
+function renderScoreBoxes(h) {
+  return [1,3,7].map(function(m) {
+    var sc = h.scores[m];
+    var bg = sc.s>=4?'#e8f5e9':sc.s>=3?'#fff3e0':'#ffebee';
+    var cl = sc.s>=4?'var(--success)':sc.s>=3?'var(--warning)':'var(--danger)';
+    var stars = '';
+    for(var i=0;i<5;i++) stars += i<sc.s?'\u2605':'\u2606';
+    return '<div style="background:'+bg+';padding:0.4rem 0.6rem;border-radius:6px;font-size:0.78rem;">' +
+      '<strong style="color:'+cl+'">'+m+'월 '+stars+'</strong><br>'+sc.n+'</div>';
+  }).join('');
+}
+
+function renderHoneymoon() {
+  document.getElementById('honeymoonSelect').value = state.honeymoon;
+  const container = document.getElementById('honeymoonCards');
+
+  const julyStars = (score) => {
+    let s = '';
+    for (let i = 0; i < 5; i++) s += i < score ? '\u2605' : '\u2606';
+    return s;
+  };
+
+  const renderCard = (h) => `
+    <div class="hm-card" style="border-color:${h.color}22">
+      <span class="hm-tag" style="background:${h.color}">${h.tag}</span>
+      <div class="hm-header">
+        <h3>${h.name}</h3>
+        <span class="hm-country">${h.country}</span>
+        <span class="hm-days">${h.days}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.4rem;margin-bottom:0.8rem;">
+        ${renderScoreBoxes(h)}
+      </div>
+      <div class="hm-costs">
+        <div class="hm-cost-item">
+          <div class="cost-label">항공 (2인)</div>
+          <div class="cost-value">${fmt(h.flight.low)}~${fmt(h.flight.high)}만</div>
+          <div class="cost-note">${h.flight.note}</div>
+        </div>
+        <div class="hm-cost-item">
+          <div class="cost-label">숙박 (전체)</div>
+          <div class="cost-value">${fmt(h.hotel.low)}~${fmt(h.hotel.high)}만</div>
+          <div class="cost-note">${h.hotel.note}</div>
+        </div>
+        <div class="hm-cost-item">
+          <div class="cost-label">현지경비 (2인)</div>
+          <div class="cost-value">${fmt(h.expense.low)}~${fmt(h.expense.high)}만</div>
+          <div class="cost-note">${h.expense.note}</div>
+        </div>
+      </div>
+      <div class="hm-total">
+        <div class="total-label">2인 총 예상 비용</div>
+        <div class="total-value">${fmt(h.total.low)} ~ ${fmt(h.total.high)}만원</div>
+      </div>
+      <div class="hm-lists">
+        <div class="hm-list pros">
+          <h4 style="color:var(--success)">장점</h4>
+          <ul>${h.pros.map(function(p){return '<li>'+p+'</li>';}).join('')}</ul>
+        </div>
+        <div class="hm-list cons">
+          <h4 style="color:var(--danger)">단점</h4>
+          <ul>${h.cons.map(function(c){return '<li>'+c+'</li>';}).join('')}</ul>
+        </div>
+      </div>
+      <div class="hm-best-time">추천 시기: <strong>${h.bestTime}</strong></div>
+    </div>
+  `;
+
+  const budgetList = HONEYMOON_DATA.filter(h => h.tier === 'budget');
+  const premiumList = HONEYMOON_DATA.filter(h => h.tier === 'premium');
+
+  container.innerHTML = `
+    <h3 style="color:var(--success);margin-bottom:0.8rem;font-size:1rem;">가성비 (140~400만원)</h3>
+    ${budgetList.sort((a,b) => b.scores[7].s - a.scores[7].s).map(renderCard).join('')}
+    <h3 style="color:var(--primary);margin:1.5rem 0 0.8rem;font-size:1rem;">프리미엄 (450~1,000만원)</h3>
+    ${premiumList.sort((a,b) => b.scores[7].s - a.scores[7].s).map(renderCard).join('')}
+  `;
+
+  selectHoneymoon();
+}
+
+function selectHoneymoon() {
+  const sel = document.getElementById('honeymoonSelect').value;
+  state.honeymoon = sel;
+  saveState();
+  const dest = HONEYMOON_DATA.find(h => h.id === sel);
+  const result = document.getElementById('honeymoonResult');
+
+  // Update budget item
+  const budgetItem = BUDGET_ITEMS.find(i => i.name === '신혼여행');
+  if (budgetItem && dest) {
+    budgetItem.economy = dest.total.low;
+    budgetItem.standard = Math.round((dest.total.low + dest.total.high) / 2);
+    budgetItem.premium = dest.total.high;
+    budgetItem.detail = `${dest.name} ${dest.days} (항공+숙박+경비)`;
+  }
+
+  if (dest) {
+    const avg = Math.round((dest.total.low + dest.total.high) / 2);
+    const months23 = 23 * MONTHLY_SAVINGS + 4 * BONUS_AMOUNT;
+    const totalBudget = getTotalBudget(state.budgetTier);
+    const gl = JSON.parse(localStorage.getItem('weddingGuests') || '[]');
+    const chukui = gl.length > 0 ? gl.reduce((s, g) => s + (g.chukui || 0), 0) : FALLBACK_CHUKUIGEUM;
+    result.innerHTML = `
+      <strong>${dest.name} 선택 시 예산 반영 결과</strong>
+      신혼여행 비용: 절약 ${fmt(dest.total.low)}만 / 표준 ${fmt(avg)}만 / 프리미엄 ${fmt(dest.total.high)}만<br>
+      7월 적합도: ${'★'.repeat(dest.scores[7].s)}${'☆'.repeat(5-dest.scores[7].s)}<br>
+      전체 결혼 비용(${state.budgetTier === 'economy' ? '절약형' : state.budgetTier === 'standard' ? '표준형' : '프리미엄'}): <b>${fmt(totalBudget)}만원</b> | 축의금: <b>${fmt(chukui)}만원</b><br>
+      23개월 저축 가능액: <b>${fmt(months23)}만원</b> →
+      ${months23 >= (totalBudget - chukui) ?
+        `<span style="color:var(--success)">달성 가능 (여유 ${fmt(months23 - (totalBudget - chukui))}만)</span>` :
+        `<span style="color:var(--danger)">부족 ${fmt((totalBudget - chukui) - months23)}만 (양가 지원 or 등급 조정 필요)</span>`
+      }
+    `;
+  }
+
+  // Re-render budget and dashboard with updated honeymoon cost
+  renderDashboard();
+  renderBudget();
+  renderSavings();
+}
+
+// ========== INIT ==========
+function renderAll() {
+  renderDashboard();
+  renderBudget();
+  renderSavings();
+  renderTimeline();
+  renderChecklist();
+  renderGuests();
+  renderVenue();
+  renderHoneymoon();
+  renderCards();
+  renderTips();
+}
+
+renderAll();
+</script>
+</body>
+</html>
